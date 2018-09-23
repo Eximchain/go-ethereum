@@ -21,15 +21,17 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/eximchain/go-ethereum/common"
-	"github.com/eximchain/go-ethereum/core"
-	"github.com/eximchain/go-ethereum/core/bloombits"
-	"github.com/eximchain/go-ethereum/core/types"
-	"github.com/eximchain/go-ethereum/ethdb"
-	"github.com/eximchain/go-ethereum/event"
-	"github.com/eximchain/go-ethereum/rpc"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/core/bloombits"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/event"
+	"github.com/ethereum/go-ethereum/rpc"
 )
 
+//Backend  TODO: comment
 type Backend interface {
 	ChainDb() ethdb.Database
 	EventMux() *event.TypeMux
@@ -231,7 +233,8 @@ func (f *Filter) unindexedLogs(ctx context.Context, end uint64) ([]*types.Log, e
 
 // blockLogs returns the logs matching the filter criteria within a single block.
 func (f *Filter) blockLogs(ctx context.Context, header *types.Header) (logs []*types.Log, err error) {
-	if bloomFilter(header.Bloom, f.addresses, f.topics) {
+	bloomMatches := bloomFilter(header.Bloom, f.addresses, f.topics) || bloomFilter(rawdb.GetPrivateBlockBloom(f.db, header.Number.Uint64()), f.addresses, f.topics)
+	if bloomMatches {
 		found, err := f.checkMatches(ctx, header)
 		if err != nil {
 			return logs, err
