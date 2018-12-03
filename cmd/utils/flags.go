@@ -606,6 +606,28 @@ var (
 		Usage: "InfluxDB `host` tag attached to all measurements",
 		Value: "localhost",
 	}
+
+	// Vault flags
+	VaultAddrFlag = cli.StringFlag{
+		Name:  "vaultaddr",
+		Usage: "DNS or IP address where a Hashicorp Vault server holding passwords can be reached. If set, vaultpasswordpath must also be set, and you should ensure that you can use the vaultprefix and vaultpasswordname default values. Vault password fetching only works when geth is running in an EC2 instance.",
+		Value: "",
+	}
+	VaultPrefixFlag = cli.StringFlag{
+		Name:  "vaultprefix",
+		Usage: "Prefix where the Vault KV engine is mounted, no outer slashes. Canonically set to `quorum` in Eximchain. Vault password fetching only works when geth is running in an EC2 instance.",
+		Value: "quorum",
+	}
+	VaultPasswordPathFlag = cli.StringFlag{
+		Name:  "vaultpasswordpath",
+		Usage: "Vault path to where password is kept within KV engine.  No leading slash, does not include the engine's mount prefix. If set, vaultaddr must also be set, and you should ensure that you can use the vaultprefix and vaultpasswordname default values. Vault password fetching only works when geth is running in an EC2 instance.",
+		Value: "",
+	}
+	VaultPasswordNameFlag = cli.StringFlag{
+		Name:  "vaultpasswordname",
+		Usage: "Key name within KV store where password is kept. Canonically set to `geth_pw` in Eximchain. Vault password fetching only works when geth is running in an EC2 instance.",
+		Value: "geth_pw",
+	}
 )
 
 // MakeDataDir retrieves the currently requested data directory, terminating
