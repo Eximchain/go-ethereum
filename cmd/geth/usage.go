@@ -229,6 +229,15 @@ var AppHelpFlagGroups = []flagGroup{
 		},
 	},
 	{
+		Name: "VAULT",
+		Flags: []cli.Flag{
+			utils.VaultAddrFlag,
+			utils.VaultPrefixFlag,
+			utils.VaultPasswordPathFlag,
+			utils.VaultPasswordNameFlag,
+		},
+	},
+	{
 		Name:  "WHISPER (EXPERIMENTAL)",
 		Flags: whisperFlags,
 	},
