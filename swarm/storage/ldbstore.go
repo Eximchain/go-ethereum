@@ -34,11 +34,11 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/swarm/chunk"
-	"github.com/ethereum/go-ethereum/swarm/log"
-	"github.com/ethereum/go-ethereum/swarm/storage/mock"
+	"github.com/eximchain/go-ethereum/metrics"
+	"github.com/eximchain/go-ethereum/rlp"
+	"github.com/eximchain/go-ethereum/swarm/chunk"
+	"github.com/eximchain/go-ethereum/swarm/log"
+	"github.com/eximchain/go-ethereum/swarm/storage/mock"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 )
