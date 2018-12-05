@@ -302,7 +302,6 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 		passwords = utils.MakePasswordList(ctx)
 	}
 
-	passwords := utils.MakePasswordList(ctx)
 	unlocks := strings.Split(ctx.GlobalString(utils.UnlockedAccountFlag.Name), ",")
 	for i, account := range unlocks {
 		if trimmed := strings.TrimSpace(account); trimmed != "" {
@@ -311,7 +310,7 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 			// Ensure the Vault password only gets used for one unlock
 			if usingVault {
 				if usedVault {
-					utils.Fatalf("Vault passwords only support unlocking one account, it looks like you are trying to unlock %v.", len(accounts))
+					utils.Fatalf("Vault passwords only support unlocking one account, it looks like you are trying to unlock %v.", len(unlocks))
 				}
 				usedVault = true
 			}

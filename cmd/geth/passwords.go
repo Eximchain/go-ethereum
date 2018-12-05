@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go/aws/ec2metadata"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/eximchain/go-ethereum/cmd/utils"
@@ -66,9 +68,7 @@ func usingVaultPassword(ctx *cli.Context) bool {
 	case 0:
 		// Ensure there were no other password args before returning true.  Much safety, very check.
 		passwordFlags := map[cli.StringFlag]string{
-			utils.VoteAccountPasswordFlag:           strings.TrimSpace(ctx.GlobalString(utils.VoteAccountPasswordFlag.Name)),
-			utils.VoteBlockMakerAccountPasswordFlag: strings.TrimSpace(ctx.GlobalString(utils.VoteBlockMakerAccountPasswordFlag.Name)),
-			utils.PasswordFileFlag:                  strings.TrimSpace(ctx.GlobalString(utils.PasswordFileFlag.Name)),
+			utils.PasswordFileFlag: strings.TrimSpace(ctx.GlobalString(utils.PasswordFileFlag.Name)),
 		}
 		setPassFlags := make([]string, 0)
 		for flag, val := range passwordFlags {
@@ -114,16 +114,22 @@ func getIAMRole() (string, error) {
 	return role, nil
 }
 func loginAws(v *vaultAPI.Client) (string, error) {
-	// Login data args are left empty so that Vault's AWSAuth implementation
-	// knows to let AWS's EnvProvider handle it.  The EnvProvider searches the
-	// environment for these values: https://github.com/aws/aws-sdk-go/blob/master/aws/credentials/env_provider.go
-	// The args all get their own line so the linter doesn't reshuffle quotes & comments
-	loginData, err := awsauth.GenerateLoginData(
-		/*accessKey=*/ "",
-		/*secretKey=*/ "",
-		/*sessionToken=*/ "",
-		/*headerValue=*/ "",
-	)
+	// Prefer credentials in the following order:
+	// 1. Environment Variables
+	// 2. EC2 Role
+	// 3. Default Credentials File
+	creds := credentials.NewChainCredentials(
+		[]credentials.Provider{
+			&credentials.EnvProvider{},
+			&ec2rolecreds.EC2RoleProvider{
+				Client: ec2metadata.New(session.New()),
+			},
+			&credentials.SharedCredentialsProvider{
+				Filename: "",
+				Profile:  "",
+			},
+		})
+	loginData, err := awsauth.GenerateLoginData(creds /*headerValue=*/, "")
 	if err != nil {
 		return "", err
 	}
