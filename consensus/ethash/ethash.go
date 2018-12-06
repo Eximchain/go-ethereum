@@ -787,18 +787,6 @@ func (ethash *Ethash) AuthorizeClient(client *rpc.Client) error {
 
 }
 
-// Weyl proof-of-authority protocol constants.
-var (
-	//inmemorySignatures = 1024                     // Number of recent blocks to keep in memory
-	//extraVanity        = 32                       // Fixed number of extra-data prefix bytes reserved for signer vanity
-	extraSeal = 65 // Fixed number of extra-data suffix bytes reserved for signer seal
-)
-var (
-	// errMissingSignature is returned if a block's extra-data section doesn't seem
-	// to contain a 65 byte secp256k1 signature.
-	errMissingSignature = errors.New("extra-data 65 byte suffix signature missing")
-)
-
 // ecrecover extracts the Ethereum account address from a signed header.
 // TODO: add in cache sigcache *lru.ARCCache
 func ecrecover(header *types.Header) (common.Address, error) {

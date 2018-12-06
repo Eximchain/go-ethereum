@@ -60,6 +60,14 @@ var (
 	// errUnknownBlock is returned when the list of signers is requested for a block
 	// that is not part of the local blockchain.
 	errUnknownBlock = errors.New("unknown block")
+	// errMissingVanity is returned if a block's extra-data section is shorter than
+	// 32 bytes, which is required to store the signer vanity.
+	errMissingVanity = errors.New("extra-data 32 byte vanity prefix missing")
+
+	// errMissingSignature is returned if a block's extra-data section doesn't seem
+	// to contain a 65 byte secp256k1 signature.
+	errMissingSignature = errors.New("extra-data 65 byte suffix signature missing")
+
 )
 
 // proof-of-authority protocol constants.
