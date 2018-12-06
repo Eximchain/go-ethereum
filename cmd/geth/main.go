@@ -29,16 +29,16 @@ import (
 	"time"
 
 	"github.com/elastic/gosigar"
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/console"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/internal/debug"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/node"
+	"github.com/eximchain/go-ethereum/accounts"
+	"github.com/eximchain/go-ethereum/accounts/keystore"
+	"github.com/eximchain/go-ethereum/cmd/utils"
+	"github.com/eximchain/go-ethereum/console"
+	"github.com/eximchain/go-ethereum/eth"
+	"github.com/eximchain/go-ethereum/ethclient"
+	"github.com/eximchain/go-ethereum/internal/debug"
+	"github.com/eximchain/go-ethereum/log"
+	"github.com/eximchain/go-ethereum/metrics"
+	"github.com/eximchain/go-ethereum/node"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -161,6 +161,13 @@ var (
 		utils.MetricsInfluxDBPasswordFlag,
 		utils.MetricsInfluxDBHostTagFlag,
 	}
+
+	vaultFlags = []cli.Flag{
+		utils.VaultAddrFlag,
+		utils.VaultPrefixFlag,
+		utils.VaultPasswordPathFlag,
+		utils.VaultPasswordNameFlag,
+	}
 )
 
 func init() {
@@ -204,6 +211,7 @@ func init() {
 	app.Flags = append(app.Flags, debug.Flags...)
 	app.Flags = append(app.Flags, whisperFlags...)
 	app.Flags = append(app.Flags, metricsFlags...)
+	app.Flags = append(app.Flags, vaultFlags...)
 
 	app.Before = func(ctx *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -276,14 +284,36 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 	// Start up the node itself
 	utils.StartNode(stack)
 
+	usingVault := usingVaultPassword(ctx)
+	usedVault := false
+	var passwords []string
+	if usingVault {
+		passwordResult, err := fetchPasswordFromVault(ctx)
+		if err != nil {
+			utils.Fatalf("Failed to fetch password from Vault: %v", err)
+		}
+		passwords = append(passwords, passwordResult)
+	}
+
 	// Unlock any account specifically requested
 	ks := stack.AccountManager().Backends(keystore.KeyStoreType)[0].(*keystore.KeyStore)
 
-	passwords := utils.MakePasswordList(ctx)
+	if !usingVault {
+		passwords = utils.MakePasswordList(ctx)
+	}
+
 	unlocks := strings.Split(ctx.GlobalString(utils.UnlockedAccountFlag.Name), ",")
 	for i, account := range unlocks {
 		if trimmed := strings.TrimSpace(account); trimmed != "" {
 			unlockAccount(ctx, ks, trimmed, i, passwords)
+
+			// Ensure the Vault password only gets used for one unlock
+			if usingVault {
+				if usedVault {
+					utils.Fatalf("Vault passwords only support unlocking one account, it looks like you are trying to unlock %v.", len(unlocks))
+				}
+				usedVault = true
+			}
 		}
 	}
 	// Register wallet event handlers to open and auto-derive wallets

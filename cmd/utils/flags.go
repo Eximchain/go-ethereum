@@ -28,35 +28,35 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/fdlimit"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/clique"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/dashboard"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/gasprice"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/ethstats"
-	"github.com/ethereum/go-ethereum/les"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/metrics/influxdb"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/discv5"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/p2p/netutil"
-	"github.com/ethereum/go-ethereum/params"
-	whisper "github.com/ethereum/go-ethereum/whisper/whisperv6"
+	"github.com/eximchain/go-ethereum/accounts"
+	"github.com/eximchain/go-ethereum/accounts/keystore"
+	"github.com/eximchain/go-ethereum/common"
+	"github.com/eximchain/go-ethereum/common/fdlimit"
+	"github.com/eximchain/go-ethereum/consensus"
+	"github.com/eximchain/go-ethereum/consensus/clique"
+	"github.com/eximchain/go-ethereum/consensus/ethash"
+	"github.com/eximchain/go-ethereum/core"
+	"github.com/eximchain/go-ethereum/core/state"
+	"github.com/eximchain/go-ethereum/core/vm"
+	"github.com/eximchain/go-ethereum/crypto"
+	"github.com/eximchain/go-ethereum/dashboard"
+	"github.com/eximchain/go-ethereum/eth"
+	"github.com/eximchain/go-ethereum/eth/downloader"
+	"github.com/eximchain/go-ethereum/eth/gasprice"
+	"github.com/eximchain/go-ethereum/ethdb"
+	"github.com/eximchain/go-ethereum/ethstats"
+	"github.com/eximchain/go-ethereum/les"
+	"github.com/eximchain/go-ethereum/log"
+	"github.com/eximchain/go-ethereum/metrics"
+	"github.com/eximchain/go-ethereum/metrics/influxdb"
+	"github.com/eximchain/go-ethereum/node"
+	"github.com/eximchain/go-ethereum/p2p"
+	"github.com/eximchain/go-ethereum/p2p/discover"
+	"github.com/eximchain/go-ethereum/p2p/discv5"
+	"github.com/eximchain/go-ethereum/p2p/nat"
+	"github.com/eximchain/go-ethereum/p2p/netutil"
+	"github.com/eximchain/go-ethereum/params"
+	whisper "github.com/eximchain/go-ethereum/whisper/whisperv6"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -605,6 +605,28 @@ var (
 		Name:  "metrics.influxdb.host.tag",
 		Usage: "InfluxDB `host` tag attached to all measurements",
 		Value: "localhost",
+	}
+
+	// Vault flags
+	VaultAddrFlag = cli.StringFlag{
+		Name:  "vaultaddr",
+		Usage: "DNS or IP address where a Hashicorp Vault server holding passwords can be reached. If set, vaultpasswordpath must also be set, and you should ensure that you can use the vaultprefix and vaultpasswordname default values. Vault password fetching only works when geth is running in an EC2 instance.",
+		Value: "",
+	}
+	VaultPrefixFlag = cli.StringFlag{
+		Name:  "vaultprefix",
+		Usage: "Prefix where the Vault KV engine is mounted, no outer slashes. Canonically set to `quorum` in Eximchain. Vault password fetching only works when geth is running in an EC2 instance.",
+		Value: "quorum",
+	}
+	VaultPasswordPathFlag = cli.StringFlag{
+		Name:  "vaultpasswordpath",
+		Usage: "Vault path to where password is kept within KV engine.  No leading slash, does not include the engine's mount prefix. If set, vaultaddr must also be set, and you should ensure that you can use the vaultprefix and vaultpasswordname default values. Vault password fetching only works when geth is running in an EC2 instance.",
+		Value: "",
+	}
+	VaultPasswordNameFlag = cli.StringFlag{
+		Name:  "vaultpasswordname",
+		Usage: "Key name within KV store where password is kept. Canonically set to `geth_pw` in Eximchain. Vault password fetching only works when geth is running in an EC2 instance.",
+		Value: "geth_pw",
 	}
 )
 

@@ -25,10 +25,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/eximchain/go-ethereum/accounts/keystore"
+	"github.com/eximchain/go-ethereum/common"
+	"github.com/eximchain/go-ethereum/common/hexutil"
+	"github.com/eximchain/go-ethereum/core/types"
 )
 
 func tmpdir(t *testing.T) string {
@@ -83,7 +83,7 @@ func TestTestMode(t *testing.T) {
 }
 
 // This test checks that cache lru logic doesn't crash under load.
-// It reproduces https://github.com/ethereum/go-ethereum/issues/14943
+// It reproduces https://github.com/eximchain/go-ethereum/issues/14943
 func TestCacheFileEvict(t *testing.T) {
 	tmpdir, err := ioutil.TempDir("", "ethash-test")
 	if err != nil {

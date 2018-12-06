@@ -24,8 +24,8 @@ import (
 
 	"strings"
 
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/internal/debug"
+	"github.com/eximchain/go-ethereum/cmd/utils"
+	"github.com/eximchain/go-ethereum/internal/debug"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -226,6 +226,15 @@ var AppHelpFlagGroups = []flagGroup{
 			utils.MetricsInfluxDBUsernameFlag,
 			utils.MetricsInfluxDBPasswordFlag,
 			utils.MetricsInfluxDBHostTagFlag,
+		},
+	},
+	{
+		Name: "VAULT",
+		Flags: []cli.Flag{
+			utils.VaultAddrFlag,
+			utils.VaultPrefixFlag,
+			utils.VaultPasswordPathFlag,
+			utils.VaultPasswordNameFlag,
 		},
 	},
 	{

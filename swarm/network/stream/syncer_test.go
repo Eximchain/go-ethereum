@@ -28,17 +28,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/simulations/adapters"
-	"github.com/ethereum/go-ethereum/swarm/log"
-	"github.com/ethereum/go-ethereum/swarm/network"
-	"github.com/ethereum/go-ethereum/swarm/network/simulation"
-	"github.com/ethereum/go-ethereum/swarm/state"
-	"github.com/ethereum/go-ethereum/swarm/storage"
-	mockdb "github.com/ethereum/go-ethereum/swarm/storage/mock/db"
+	"github.com/eximchain/go-ethereum/common"
+	"github.com/eximchain/go-ethereum/node"
+	"github.com/eximchain/go-ethereum/p2p"
+	"github.com/eximchain/go-ethereum/p2p/discover"
+	"github.com/eximchain/go-ethereum/p2p/simulations/adapters"
+	"github.com/eximchain/go-ethereum/swarm/log"
+	"github.com/eximchain/go-ethereum/swarm/network"
+	"github.com/eximchain/go-ethereum/swarm/network/simulation"
+	"github.com/eximchain/go-ethereum/swarm/state"
+	"github.com/eximchain/go-ethereum/swarm/storage"
+	mockdb "github.com/eximchain/go-ethereum/swarm/storage/mock/db"
 )
 
 const dataChunkCount = 200
