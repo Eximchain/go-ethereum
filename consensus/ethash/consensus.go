@@ -31,7 +31,7 @@ import (
 	"github.com/eximchain/go-ethereum/consensus"
 	"github.com/eximchain/go-ethereum/consensus/misc"
 	"github.com/eximchain/go-ethereum/core/state"
-	"github.com/eximcahin/go-ethereum/core/types"
+	"github.com/eximchain/go-ethereum/core/types"
 	"github.com/eximchain/go-ethereum/params"
 )
 

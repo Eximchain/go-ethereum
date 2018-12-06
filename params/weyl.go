@@ -1,6 +1,6 @@
 package params
 
-import "github.com/ethereum/go-ethereum/common"
+import "github.com/eximchain/go-ethereum/common"
 
 var (
 	//QuorumVotingContractAddr TODO: Comment

@@ -1,9 +1,9 @@
 package eth
 
 import (
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/eximchain/go-ethereum/consensus/ethash"
+	"github.com/eximchain/go-ethereum/log"
+	"github.com/eximchain/go-ethereum/rpc"
 )
 
 //InjectClient makes an rpc client available in consensus engine
