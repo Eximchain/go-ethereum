@@ -67,7 +67,6 @@ var (
 	// errMissingSignature is returned if a block's extra-data section doesn't seem
 	// to contain a 65 byte secp256k1 signature.
 	errMissingSignature = errors.New("extra-data 65 byte suffix signature missing")
-
 )
 
 // proof-of-authority protocol constants.
@@ -77,7 +76,6 @@ var (
 	// blockPeriod = uint64(15)    // Default minimum difference between two consecutive block's timestamps
 	// uncleHash = types.CalcUncleHash(nil) // Always Keccak256(RLP([])) as uncles are meaningless outside of PoW.
 )
-
 
 // Author implements consensus.Engine, returning the header's coinbase as the
 // proof-of-work verified author of the block.
@@ -243,12 +241,10 @@ func (ethash *Ethash) VerifyUncles(chain consensus.ChainReader, block *types.Blo
 // See YP section 4.3.4. "Block Header Validity"
 func (ethash *Ethash) verifyHeader(chain consensus.ChainReader, header, parent *types.Header, uncle bool, seal bool) error {
 	// Ensure that the header's extra-data section is of a reasonable size
-	if len(header.Extra) < extraVanity {
-		return errMissingVanity
+	if uint64(len(header.Extra)) > params.MaximumExtraDataSize {
+		return fmt.Errorf("extra-data too long: %d > %d", len(header.Extra), params.MaximumExtraDataSize)
 	}
-	if len(header.Extra) < extraVanity+extraSeal {
-		return errMissingSignature
-	}
+
 	// Verify the header's timestamp
 	if uncle {
 		if header.Time.Cmp(math.MaxBig256) > 0 {

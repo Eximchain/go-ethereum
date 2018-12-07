@@ -705,7 +705,7 @@ func TestConcurrentDiskCacheGeneration(t *testing.T) {
 		t.Fatalf("Failed to create temporary cache dir: %v", err)
 	}
 	defer os.RemoveAll(cachedir)
-
+	//TODO: need block with signature in extra data and valid mix digest
 	// Define a heavy enough block, one from mainnet should do
 	block := types.NewBlockWithHeader(&types.Header{
 		Number:      big.NewInt(3311058),

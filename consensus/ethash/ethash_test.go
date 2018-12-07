@@ -52,7 +52,7 @@ func TestTestMode(t *testing.T) {
 	defer ethash.Close()
 
 	ethash.Authorize(account.Address, keyStore.SignHash)
-	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100), Extra: make([]byte, 65)}
+	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100), Extra: make([]byte, 97)}
 
 	results := make(chan *types.Block)
 	// NOTE: ethash.seal uses the following from new ethash implementation
