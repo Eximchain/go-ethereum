@@ -20,7 +20,7 @@ package main
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/eximchain/go-ethereum/common"
 )
 
 // Genesis block for nodes which don't care about the DAO fork (i.e. not configured)

@@ -17,8 +17,8 @@
 package rawdb
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/eximchain/go-ethereum/common"
+	"github.com/eximchain/go-ethereum/core/types"
 )
 
 // The fields below define the low level database schema prefixing.
