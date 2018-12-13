@@ -19,8 +19,8 @@ import (
 
 	"github.com/eximchain/go-ethereum/common"
 	"github.com/eximchain/go-ethereum/crypto"
+	"github.com/eximchain/go-ethereum/private"
 
-	"github.com/jpmorganchase/quorum/private"
 	"github.com/jpmorganchase/quorum/private/constellation"
 )
 

@@ -759,12 +759,6 @@
 			"revisionTime": "2016-06-03T03:41:37Z"
 		},
 		{
-			"checksumSHA1": "lWIrwSV/aql0VX3l4qP3tTtevDA=",
-			"path": "github.com/jpmorganchase/quorum/private",
-			"revision": "1092eac0155bbd09c4daed9ff61357a9808e669b",
-			"revisionTime": "2018-12-13T20:27:59Z"
-		},
-		{
 			"checksumSHA1": "bOLaj4Qo7KaSDk9CzOY2r0oAx/4=",
 			"path": "github.com/jpmorganchase/quorum/private/constellation",
 			"revision": "1092eac0155bbd09c4daed9ff61357a9808e669b",

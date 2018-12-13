@@ -25,7 +25,7 @@ import (
 	"github.com/eximchain/go-ethereum/core/vm"
 	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/params"
-	"github.com/jpmorganchase/quorum/private"
+	"github.com/eximchain/go-ethereum/private"
 )
 
 var (

@@ -40,9 +40,9 @@ import (
 	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/p2p"
 	"github.com/eximchain/go-ethereum/params"
+	"github.com/eximchain/go-ethereum/private"
 	"github.com/eximchain/go-ethereum/rlp"
 	"github.com/eximchain/go-ethereum/rpc"
-	"github.com/jpmorganchase/quorum/private"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
