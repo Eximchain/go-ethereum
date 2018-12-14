@@ -628,6 +628,13 @@ var (
 		Usage: "Key name within KV store where password is kept. Canonically set to `geth_pw` in Eximchain. Vault password fetching only works when geth is running in an EC2 instance.",
 		Value: "geth_pw",
 	}
+
+	// Private Config Flags
+	PrivateConfigPathFlag = cli.StringFlag{
+		Name:  "privateconfigpath",
+		Usage: "Path of the constellation private config",
+		Value: "",
+	}
 )
 
 // MakeDataDir retrieves the currently requested data directory, terminating

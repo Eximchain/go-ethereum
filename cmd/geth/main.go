@@ -39,6 +39,7 @@ import (
 	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/metrics"
 	"github.com/eximchain/go-ethereum/node"
+	"github.com/eximchain/go-ethereum/private"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -168,6 +169,10 @@ var (
 		utils.VaultPasswordPathFlag,
 		utils.VaultPasswordNameFlag,
 	}
+
+	privateTxFlags = []cli.Flag{
+		utils.PrivateConfigPathFlag,
+	}
 )
 
 func init() {
@@ -212,6 +217,7 @@ func init() {
 	app.Flags = append(app.Flags, whisperFlags...)
 	app.Flags = append(app.Flags, metricsFlags...)
 	app.Flags = append(app.Flags, vaultFlags...)
+	app.Flags = append(app.Flags, privateTxFlags...)
 
 	app.Before = func(ctx *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -396,4 +402,8 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 		}
 	}
 
+	if cfgPath := ctx.GlobalString(utils.PrivateConfigPathFlag.Name); cfgPath != "" {
+		private.SetCliCfgPath(cfgPath)
+		private.RegeneratePrivateConfig()
+	}
 }
