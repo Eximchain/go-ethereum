@@ -91,6 +91,7 @@ func (c *Client) SendPayload(pl []byte, b64From string, b64To []string) ([]byte,
 	}
 	req.Header.Set("c11n-to", strings.Join(b64To, ","))
 	req.Header.Set("Content-Type", "application/octet-stream")
+	fmt.Printf("Submitting Constellation Request: %+v", req)
 	res, err := c.httpClient.Do(req)
 
 	if res != nil {
