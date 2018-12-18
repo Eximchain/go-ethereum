@@ -7,7 +7,8 @@ import (
 type Config struct {
 	Socket  string `toml:"socket"`
 	WorkDir string `toml:"workdir"`
-
+	BaseURL string `toml:"clienturl"`
+	Grpc bool `toml:"grpc"`
 	// Deprecated
 	SocketPath string `toml:"socketPath"`
 }

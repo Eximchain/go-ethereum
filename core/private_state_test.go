@@ -21,7 +21,7 @@ import (
 	"github.com/eximchain/go-ethereum/crypto"
 	"github.com/eximchain/go-ethereum/private"
 
-	"github.com/jpmorganchase/quorum/private/constellation"
+	"github.com/consensys/quorum/private/constellation"
 )
 
 // callmsg is the message type used for call transactions in the private state test

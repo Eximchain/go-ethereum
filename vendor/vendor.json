@@ -249,6 +249,12 @@
 			"revisionTime": "2018-12-04T22:38:45Z"
 		},
 		{
+			"checksumSHA1": "+I++qrKjOu8VPbUCli8UtVmr2Mc=",
+			"path": "github.com/blk-io/chimera-api/chimera",
+			"revision": "ebd4db90873296427420c2fe2acec18c127b401d",
+			"revisionTime": "2018-08-23T14:33:31Z"
+		},
+		{
 			"checksumSHA1": "gZQ6HheWahvZzIc3phBnOwoWHjE=",
 			"path": "github.com/btcsuite/btcd/btcec",
 			"revision": "2e60448ffcc6bf78332d1fe590260095f554dd78",
@@ -265,6 +271,12 @@
 			"path": "github.com/codahale/hdrhistogram",
 			"revision": "3a0bb77429bd3a61596f5e8a3172445844342120",
 			"revisionTime": "2016-10-10T02:54:55Z"
+		},
+		{
+			"checksumSHA1": "XF1wyaRowEfOJOapdHKFirU34RQ=",
+			"path": "github.com/consensys/quorum/private/constellation",
+			"revision": "b6d44af6b5df96c07772f6f4b18e759508e6a4bd",
+			"revisionTime": "2018-10-17T22:20:03Z"
 		},
 		{
 			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
@@ -357,6 +369,12 @@
 			"revisionTime": "2017-07-10T16:04:46Z"
 		},
 		{
+			"checksumSHA1": "BP2buXHHOKxI5eYS2xELVng2kf4=",
+			"path": "github.com/golang/protobuf/jsonpb",
+			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
+			"revisionTime": "2018-11-28T19:23:52Z"
+		},
+		{
 			"checksumSHA1": "Y2MOwzNZfl4NRNDbLCZa6sgx7O0=",
 			"path": "github.com/golang/protobuf/proto",
 			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
@@ -365,6 +383,24 @@
 		{
 			"checksumSHA1": "WOkXetG3AqJnfVVuqTJvdukcHps=",
 			"path": "github.com/golang/protobuf/protoc-gen-go/descriptor",
+			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
+			"revisionTime": "2018-11-28T19:23:52Z"
+		},
+		{
+			"checksumSHA1": "gOYxGkBKInpq0VIV+O7FT97RaKY=",
+			"path": "github.com/golang/protobuf/protoc-gen-go/generator",
+			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
+			"revisionTime": "2018-11-28T19:23:52Z"
+		},
+		{
+			"checksumSHA1": "uY4dEtqaAe5gsU8gbpCI1JgEIII=",
+			"path": "github.com/golang/protobuf/protoc-gen-go/generator/internal/remap",
+			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
+			"revisionTime": "2018-11-28T19:23:52Z"
+		},
+		{
+			"checksumSHA1": "h4PLbJDYnRmcUuf56USJ5K3xJOg=",
+			"path": "github.com/golang/protobuf/protoc-gen-go/plugin",
 			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
 			"revisionTime": "2018-11-28T19:23:52Z"
 		},
@@ -387,8 +423,20 @@
 			"revisionTime": "2018-11-28T19:23:52Z"
 		},
 		{
+			"checksumSHA1": "RT/PGRMtH/yBCbIJfZftaz5yc3M=",
+			"path": "github.com/golang/protobuf/ptypes/struct",
+			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
+			"revisionTime": "2018-11-28T19:23:52Z"
+		},
+		{
 			"checksumSHA1": "seEwY2xETpK9yHJ9+bHqkLZ0VMU=",
 			"path": "github.com/golang/protobuf/ptypes/timestamp",
+			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
+			"revisionTime": "2018-11-28T19:23:52Z"
+		},
+		{
+			"checksumSHA1": "KlQCb83HC090bojw4ofNDxn2nho=",
+			"path": "github.com/golang/protobuf/ptypes/wrappers",
 			"revision": "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f",
 			"revisionTime": "2018-11-28T19:23:52Z"
 		},
@@ -397,6 +445,24 @@
 			"path": "github.com/golang/snappy",
 			"revision": "553a641470496b2327abcac10b36396bd98e45c9",
 			"revisionTime": "2017-02-15T23:32:05Z"
+		},
+		{
+			"checksumSHA1": "3wzsPPMqn5TgyqyPBQ/G0sOa414=",
+			"path": "github.com/grpc-ecosystem/grpc-gateway/runtime",
+			"revision": "2cb2dfbd4c72b13c88abc7828f9b276bf7e66133",
+			"revisionTime": "2018-11-08T15:51:33Z"
+		},
+		{
+			"checksumSHA1": "dKdNxuf5/Z1Oiz+7tXTeuyXqHgE=",
+			"path": "github.com/grpc-ecosystem/grpc-gateway/runtime/internal",
+			"revision": "2cb2dfbd4c72b13c88abc7828f9b276bf7e66133",
+			"revisionTime": "2018-11-08T15:51:33Z"
+		},
+		{
+			"checksumSHA1": "yUJS5jJyNTvxHCUUXiK3xnKfN14=",
+			"path": "github.com/grpc-ecosystem/grpc-gateway/utilities",
+			"revision": "2cb2dfbd4c72b13c88abc7828f9b276bf7e66133",
+			"revisionTime": "2018-11-08T15:51:33Z"
 		},
 		{
 			"checksumSHA1": "ByRdQMv2yl16W6Tp9gUW1nNmpuI=",
@@ -757,12 +823,6 @@
 			"path": "github.com/jackpal/go-nat-pmp",
 			"revision": "1fa385a6f45828c83361136b45b1a21a12139493",
 			"revisionTime": "2016-06-03T03:41:37Z"
-		},
-		{
-			"checksumSHA1": "bOLaj4Qo7KaSDk9CzOY2r0oAx/4=",
-			"path": "github.com/jpmorganchase/quorum/private/constellation",
-			"revision": "1092eac0155bbd09c4daed9ff61357a9808e669b",
-			"revisionTime": "2018-12-13T20:27:59Z"
 		},
 		{
 			"checksumSHA1": "gKyBj05YkfuLFruAyPZ4KV9nFp8=",
@@ -1492,10 +1552,22 @@
 			"revisionTime": "2016-11-04T18:56:24Z"
 		},
 		{
+			"checksumSHA1": "YNqziavfZHurG6wrwR5Uf9SnI4s=",
+			"path": "google.golang.org/genproto/googleapis/api/annotations",
+			"revision": "67d6565462c5a0d99b88193d59fefa10ca7e3010",
+			"revisionTime": "2018-12-18T02:35:34Z"
+		},
+		{
 			"checksumSHA1": "oUD15OBRSXt0t4P0s6HMjH/+iQo=",
 			"path": "google.golang.org/genproto/googleapis/rpc/status",
 			"revision": "bd91e49a0898e27abb88c339b432fa53d7497ac0",
 			"revisionTime": "2018-12-02T18:38:23Z"
+		},
+		{
+			"checksumSHA1": "nqnnm6YjyqMt33FmtYC9GbOaHiA=",
+			"path": "google.golang.org/genproto/protobuf/field_mask",
+			"revision": "67d6565462c5a0d99b88193d59fefa10ca7e3010",
+			"revisionTime": "2018-12-18T02:35:34Z"
 		},
 		{
 			"checksumSHA1": "AfS0nrXTi8r6TeGCwyCdBdr0I2k=",

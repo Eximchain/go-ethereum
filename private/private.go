@@ -3,7 +3,7 @@ package private
 import (
 	"os"
 
-	"github.com/jpmorganchase/quorum/private/constellation"
+	"github.com/consensys/quorum/private/constellation"
 )
 
 type PrivateTransactionManager interface {
