@@ -359,6 +359,7 @@ func (s *PrivateAccountAPI) signTransaction(ctx context.Context, args SendTxArgs
 	if config := s.b.ChainConfig(); config.IsEIP155(s.b.CurrentBlock().Number()) && !isPrivate {
 		chainID = config.ChainID
 	}
+	log.Info("signing private tx", "account", fmt.Sprintf("%v", account), "passwd", passwd, "tx", tx, "chainID", chainID)
 	return wallet.SignTxWithPassphrase(account, passwd, tx, chainID)
 }
 
