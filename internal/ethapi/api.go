@@ -341,14 +341,17 @@ func (s *PrivateAccountAPI) LockAccount(addr common.Address) bool {
 // NOTE: the caller needs to ensure that the nonceLock is held, if applicable,
 // and release it after the transaction has been submitted to the tx pool
 func (s *PrivateAccountAPI) signTransaction(ctx context.Context, args SendTxArgs, passwd string) (*types.Transaction, error) {
+	log.Info("beginning signTransaction")
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: args.From}
 	wallet, err := s.am.Find(account)
 	if err != nil {
+		log.Info("wallet find error", "err", err)
 		return nil, err
 	}
 	// Set some sanity defaults and terminate on failure
 	if err := args.setDefaults(ctx, s.b); err != nil {
+		log.Info("set defaults error", "err", err)
 		return nil, err
 	}
 	// Assemble the transaction and sign with the wallet
@@ -381,12 +384,14 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 		data, err := private.P.Send(data, args.PrivateFrom, args.PrivateFor)
 		log.Info("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
 		if err != nil {
+			log.Info("private tx send failed:", "err", err)
 			return common.Hash{}, err
 		}
 		hexData := hexutil.Bytes(data)
 		args.Data = hexData
 	}
 
+	log.Info("submitting private tx for signing:", "ctx", ctx, "args", args, "passwd", passwd)
 	signed, err := s.signTransaction(ctx, args, passwd)
 	if err != nil {
 		return common.Hash{}, err
