@@ -131,6 +131,7 @@ var big8 = big.NewInt(8)
 
 func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 	if tx.IsPrivate() {
+		log.Info("private tx: EIP155Signer using HomesteadSigner to retrieve sender")
 		return HomesteadSigner{}.Sender(tx)
 	}
 	if !tx.Protected() {
@@ -246,6 +247,7 @@ func recoverPlain(sighash common.Hash, R, S, Vb *big.Int, homestead bool, isPriv
 		offset = 27
 	}
 	V := byte(Vb.Uint64() - offset)
+	log.Info("recoverPlain V inspection", "V", int(V))
 	if !crypto.ValidateSignatureValues(V, R, S, homestead) {
 		return common.Address{}, ErrInvalidSig
 	}

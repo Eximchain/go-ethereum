@@ -31,6 +31,7 @@ import (
 	"github.com/eximchain/go-ethereum/common"
 	"github.com/eximchain/go-ethereum/common/math"
 	"github.com/eximchain/go-ethereum/crypto/sha3"
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/rlp"
 )
 
@@ -188,6 +189,7 @@ func GenerateKey() (*ecdsa.PrivateKey, error) {
 // ValidateSignatureValues verifies whether the signature values are valid with
 // the given chain rules. The v value is assumed to be either 0 or 1.
 func ValidateSignatureValues(v byte, r, s *big.Int, homestead bool) bool {
+	log.Info("ValidateSignatureValues arguments", "v", v, "r", r, "s", s, "homestead", homestead)
 	if r.Cmp(common.Big1) < 0 || s.Cmp(common.Big1) < 0 {
 		return false
 	}
