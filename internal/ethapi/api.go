@@ -341,17 +341,17 @@ func (s *PrivateAccountAPI) LockAccount(addr common.Address) bool {
 // NOTE: the caller needs to ensure that the nonceLock is held, if applicable,
 // and release it after the transaction has been submitted to the tx pool
 func (s *PrivateAccountAPI) signTransaction(ctx context.Context, args SendTxArgs, passwd string) (*types.Transaction, error) {
-	log.Info("beginning signTransaction")
+	log.Warn("beginning signTransaction")
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: args.From}
 	wallet, err := s.am.Find(account)
 	if err != nil {
-		log.Info("wallet find error", "err", err)
+		log.Warn("wallet find error", "err", err)
 		return nil, err
 	}
 	// Set some sanity defaults and terminate on failure
 	if err := args.setDefaults(ctx, s.b); err != nil {
-		log.Info("set defaults error", "err", err)
+		log.Warn("set defaults error", "err", err)
 		return nil, err
 	}
 	// Assemble the transaction and sign with the wallet
@@ -362,7 +362,7 @@ func (s *PrivateAccountAPI) signTransaction(ctx context.Context, args SendTxArgs
 	if config := s.b.ChainConfig(); config.IsEIP155(s.b.CurrentBlock().Number()) && !isPrivate {
 		chainID = config.ChainID
 	}
-	log.Info("signing private tx", "account", fmt.Sprintf("%v", account), "passwd", passwd, "tx", tx, "chainID", chainID)
+	log.Warn("signing private tx", "account", fmt.Sprintf("%v", account), "passwd", passwd, "tx", tx, "chainID", chainID)
 	return wallet.SignTxWithPassphrase(account, passwd, tx, chainID)
 }
 
@@ -380,20 +380,20 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 	isPrivate := args.PrivateFor != nil
 	if isPrivate {
 		data := []byte(args.Data)
-		log.Info("sending private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
+		log.Warn("sending private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
 		data, err := private.P.Send(data, args.PrivateFrom, args.PrivateFor)
-		log.Info("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
-		log.Info("crux debug branch")
+		log.Warn("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
+		log.Warn("crux debug branch private account API")
 		fmt.Println("crux debug branch (fmt)")
 		if err != nil {
-			log.Info("private tx send failed:", "err", err)
+			log.Warn("private tx send failed:", "err", err)
 			return common.Hash{}, err
 		}
 		hexData := hexutil.Bytes(data)
 		args.Data = hexData
 	}
 
-	log.Info("submitting private tx for signing:", "ctx", ctx, "args", args, "passwd", passwd)
+	log.Warn("submitting private tx for signing:", "ctx", ctx, "args", args, "passwd", passwd)
 	signed, err := s.signTransaction(ctx, args, passwd)
 	if err != nil {
 		return common.Hash{}, err
@@ -1257,10 +1257,10 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 
 	if isPrivate {
 		//Send private transaction to local Constellation node
-		log.Info("sending private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
+		log.Warn("sending private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
 		data, err = private.P.Send(data, args.PrivateFrom, args.PrivateFor)
-		log.Info("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
-		log.Info("crux debug branch public pool")
+		log.Warn("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
+		log.Warn("crux debug branch public pool")
 		if err != nil {
 			return common.Hash{}, err
 		}
@@ -1279,13 +1279,13 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 	if config := s.b.ChainConfig(); config.IsEIP155(s.b.CurrentBlock().Number()) && !isPrivate {
 		chainID = config.ChainID
 	}
-	log.Info("signing private tx", "account", account, "tx", tx, "chainID", chainID)
+	log.Warn("signing private tx", "account", account, "tx", tx, "chainID", chainID)
 	signed, err := wallet.SignTx(account, tx, chainID)
 	if err != nil {
 		log.Warn("error signing private tx", "err", err)
 		return common.Hash{}, err
 	}
-	log.Info("private tx signed, submitting tx", "ctx", ctx, "s.b", s.b, "signed", signed, "isPrivate", isPrivate)
+	log.Warn("private tx signed, submitting tx", "ctx", ctx, "s.b", s.b, "signed", signed, "isPrivate", isPrivate)
 	return submitTransaction(ctx, s.b, signed, isPrivate)
 }
 

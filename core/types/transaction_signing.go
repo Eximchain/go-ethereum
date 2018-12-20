@@ -71,19 +71,19 @@ func SignTx(tx *Transaction, s Signer, prv *ecdsa.PrivateKey) (*Transaction, err
 // signing method. The cache is invalidated if the cached signer does
 // not match the signer used in the current call.
 func Sender(signer Signer, tx *Transaction) (common.Address, error) {
-	log.Info("retrieving sender for tx", "signer", signer, "tx", tx)
+	log.Warn("retrieving sender for tx", "signer", signer, "tx", tx)
 	if sc := tx.from.Load(); sc != nil {
 		sigCache := sc.(sigCache)
 		// If the signer used to derive from in a previous
 		// call is not the same as used current, invalidate
 		// the cache.
 		if sigCache.signer.Equal(signer) {
-			log.Info("sigCache exit", "signer", signer, "sigCache.signer", sigCache.signer, "sigCache.from", sigCache.from)
+			log.Warn("sigCache exit", "signer", signer, "sigCache.signer", sigCache.signer, "sigCache.from", sigCache.from)
 			return sigCache.from, nil
 		}
 	}
 
-	log.Info("calling signer.Sender", "signerType", fmt.Sprintf("%T\n", signer), "signer", signer)
+	log.Warn("calling signer.Sender", "signerType", fmt.Sprintf("%T\n", signer), "signer", signer)
 	addr, err := signer.Sender(tx)
 	if err != nil {
 		log.Warn("error calling signer.Sender", "err", err, "signer", signer)
@@ -131,7 +131,7 @@ var big8 = big.NewInt(8)
 
 func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 	if tx.IsPrivate() {
-		log.Info("private tx: EIP155Signer using HomesteadSigner to retrieve sender")
+		log.Warn("private tx: EIP155Signer using HomesteadSigner to retrieve sender")
 		return HomesteadSigner{}.Sender(tx)
 	}
 	if !tx.Protected() {
@@ -247,7 +247,7 @@ func recoverPlain(sighash common.Hash, R, S, Vb *big.Int, homestead bool, isPriv
 		offset = 27
 	}
 	V := byte(Vb.Uint64() - offset)
-	log.Info("recoverPlain V inspection", "V", int(V))
+	log.Warn("recoverPlain V inspection", "V", int(V))
 	if !crypto.ValidateSignatureValues(V, R, S, homestead) {
 		return common.Address{}, ErrInvalidSig
 	}
