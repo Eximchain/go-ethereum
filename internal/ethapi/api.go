@@ -384,6 +384,7 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 		data, err := private.P.Send(data, args.PrivateFrom, args.PrivateFor)
 		log.Info("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
 		log.Info("crux debug branch")
+		fmt.Println("crux debug branch (fmt)")
 		if err != nil {
 			log.Info("private tx send failed:", "err", err)
 			return common.Hash{}, err
