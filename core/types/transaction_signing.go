@@ -24,6 +24,7 @@ import (
 
 	"github.com/eximchain/go-ethereum/common"
 	"github.com/eximchain/go-ethereum/crypto"
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/params"
 )
 
@@ -70,18 +71,22 @@ func SignTx(tx *Transaction, s Signer, prv *ecdsa.PrivateKey) (*Transaction, err
 // signing method. The cache is invalidated if the cached signer does
 // not match the signer used in the current call.
 func Sender(signer Signer, tx *Transaction) (common.Address, error) {
+	log.Info("retrieving sender for tx", "signer", signer, "tx", tx)
 	if sc := tx.from.Load(); sc != nil {
 		sigCache := sc.(sigCache)
 		// If the signer used to derive from in a previous
 		// call is not the same as used current, invalidate
 		// the cache.
 		if sigCache.signer.Equal(signer) {
+			log.Info("sigCache exit", "signer", signer, "sigCache.signer", sigCache.signer, "sigCache.from", sigCache.from)
 			return sigCache.from, nil
 		}
 	}
 
+	log.Info("calling signer.Sender", "signerType", fmt.Sprintf("%T\n", signer), "signer", signer)
 	addr, err := signer.Sender(tx)
 	if err != nil {
+		log.Warn("error calling signer.Sender", "err", err, "signer", signer)
 		return common.Address{}, err
 	}
 	tx.from.Store(sigCache{signer: signer, from: addr})
