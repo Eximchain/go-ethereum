@@ -423,13 +423,13 @@ func (tx *Transaction) IsPrivate() bool {
 	if tx.data.V == nil {
 		return false
 	}
-	return tx.data.V.Uint64() == 47 || tx.data.V.Uint64() == 48
+	return tx.data.V.Uint64() == 37 || tx.data.V.Uint64() == 38
 }
 
 func (tx *Transaction) SetPrivate() {
 	if tx.data.V.Int64() == 28 {
-		tx.data.V.SetUint64(48)
+		tx.data.V.SetUint64(38)
 	} else {
-		tx.data.V.SetUint64(47)
+		tx.data.V.SetUint64(37)
 	}
 }

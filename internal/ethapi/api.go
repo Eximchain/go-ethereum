@@ -1259,7 +1259,8 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 		if err != nil {
 			return common.Hash{}, err
 		}
-		args.Data = data
+		d := hexutil.Bytes(data)
+		args.Data = d
 	}
 
 	// Set some sanity defaults and terminate on failure
