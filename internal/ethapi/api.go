@@ -1211,12 +1211,18 @@ func submitTransaction(ctx context.Context, b Backend, tx *types.Transaction, is
 		tx.SetPrivate()
 	}
 	if err := b.SendTx(ctx, tx); err != nil {
+		if isPrivate {
+			log.Warn("error submitting private tx", "err", err)
+		}
 		return common.Hash{}, err
 	}
 	if tx.To() == nil {
 		signer := types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number())
 		from, err := types.Sender(signer, tx)
 		if err != nil {
+			if isPrivate {
+				log.Warn("error creating private contract", "err", err)
+			}
 			return common.Hash{}, err
 		}
 		addr := crypto.CreateAddress(from, tx.Nonce())
@@ -1255,7 +1261,6 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 		data, err = private.P.Send(data, args.PrivateFrom, args.PrivateFor)
 		log.Info("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
 		log.Info("crux debug branch public pool")
-		fmt.Println("crux debug branch public pool (fmt)")
 		if err != nil {
 			return common.Hash{}, err
 		}
@@ -1273,10 +1278,13 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 	if config := s.b.ChainConfig(); config.IsEIP155(s.b.CurrentBlock().Number()) && !isPrivate {
 		chainID = config.ChainID
 	}
+	log.Info("signing private tx", "account", account, "tx", tx, "chainID", chainID)
 	signed, err := wallet.SignTx(account, tx, chainID)
 	if err != nil {
+		log.Warn("error signing private tx", "err", err)
 		return common.Hash{}, err
 	}
+	log.Info("private tx signed, submitting tx", "ctx", ctx, "s.b", s.b, "signed", signed, "isPrivate", isPrivate)
 	return submitTransaction(ctx, s.b, signed, isPrivate)
 }
 
