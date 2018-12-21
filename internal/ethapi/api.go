@@ -1377,6 +1377,9 @@ func (s *PublicTransactionPoolAPI) PendingTransactions() ([]*RPCTransaction, err
 		if tx.Protected() {
 			signer = types.NewEIP155Signer(tx.ChainId())
 		}
+		if tx.IsPrivate() {
+			signer = types.PrivateTxSigner{}
+		}
 		from, _ := types.Sender(signer, tx)
 		if _, exists := accounts[from]; exists {
 			transactions = append(transactions, newRPCPendingTransaction(tx))
@@ -1404,6 +1407,9 @@ func (s *PublicTransactionPoolAPI) Resend(ctx context.Context, sendArgs SendTxAr
 		var signer types.Signer = types.HomesteadSigner{}
 		if p.Protected() && !p.IsPrivate() {
 			signer = types.NewEIP155Signer(p.ChainId())
+		}
+		if p.IsPrivate() {
+			signer = types.PrivateTxSigner{}
 		}
 		wantSigHash := signer.Hash(matchTx)
 
