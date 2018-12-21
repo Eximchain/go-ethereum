@@ -247,10 +247,16 @@ func (ps PrivateTxSigner) Equal(s2 Signer) bool {
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (ps PrivateTxSigner) SignatureValues(tx *Transaction, sig []byte) (r, s, v *big.Int, err error) {
+	if !tx.IsPrivate() {
+		log.Warn("PrivateTxSigner unexpectedly retrieving signature values from non-private transaction", "tx", tx)
+	}
 	return ps.FrontierSigner.SignatureValues(tx, sig)
 }
 
 func (ps PrivateTxSigner) Sender(tx *Transaction) (common.Address, error) {
+	if !tx.IsPrivate() {
+		log.Warn("PrivateTxSigner unexpectedly retrieving sender from non-private transaction", "tx", tx)
+	}
 	return recoverPlain(ps.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true, true)
 }
 
