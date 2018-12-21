@@ -260,13 +260,16 @@ func recoverPlain(sighash common.Hash, R, S, Vb *big.Int, homestead bool, isPriv
 	// recover the public key from the snature
 	pub, err := crypto.Ecrecover(sighash[:], sig)
 	if err != nil {
+		log.Warn("recoverPlain error recovering public key", "err", err)
 		return common.Address{}, err
 	}
 	if len(pub) == 0 || pub[0] != 4 {
+		log.Warn("recoverPlain error validating recovered public key", "pub", pub)
 		return common.Address{}, errors.New("invalid public key")
 	}
 	var addr common.Address
 	copy(addr[:], crypto.Keccak256(pub[1:])[12:])
+	log.Warn("recoverPlain returning address", "addr", addr)
 	return addr, nil
 }
 
