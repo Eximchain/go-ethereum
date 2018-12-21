@@ -285,25 +285,33 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 		to = *st.msg.To()
 		//if input is empty for a private smart contract call, return
 		if len(data) == 0 && isPrivate {
+			log.Warn("TransitionDb: Empty data for private contract call")
 			return nil, 0, false, nil
 		}
 		//DONE: rabbit hole
+		log.Warn("TransitionDb: Making EVM call", "sender", sender, "to", to, "data", data, "st.gas", st.gas, "st.value", st.value)
 		ret, st.gas, vmerr = evm.Call(sender, to, data, st.gas, st.value)
 	}
 	if vmerr != nil {
-		log.Debug("VM returned with error", "err", vmerr)
+		log.Warn("TransitionDB: VM returned with error", "err", vmerr)
 		// The only possible consensus-error would be if there wasn't
 		// sufficient balance to make the transfer happen. The first
 		// balance transfer may never fail.
 		if vmerr == vm.ErrInsufficientBalance {
+			log.Warn("TransitionDb: ErrInsufficientBalance")
 			return nil, 0, false, vmerr
 		}
 	}
+	log.Warn("TransitionDb: EVM call returned without error", "ret", ret, "st.gas", st.gas)
 	st.refundGas()
+	log.Warn("TransitionDb: refundGas complete")
 	st.state.AddBalance(st.evm.Coinbase, new(big.Int).Mul(new(big.Int).SetUint64(st.gasUsed()), st.gasPrice))
+	log.Warn("TransitionDb: st.state.AddBalance complete")
 	if isPrivate {
+		log.Warn("TransitionDb: private transaction returning", "ret", ret, "vmerr != nil", vmerr != nil, "err", err)
 		return ret, 0, vmerr != nil, err
 	}
+	log.Warn("TransitionDb: public transaction returning", "ret", ret, "st.gasUsed()", st.gasUsed(), "vmerr != nil", vmerr != nil, "err", err)
 	return ret, st.gasUsed(), vmerr != nil, err
 }
 
