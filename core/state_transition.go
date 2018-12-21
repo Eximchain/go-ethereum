@@ -252,12 +252,12 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 	// Pay intrinsic gas
 	gas, err := IntrinsicGas(data, contractCreation, homestead)
 	if err != nil {
-		log.Warn("IntrinsicGas Error", "err", err)
+		log.Warn("TransitionDb: IntrinsicGas Error", "err", err)
 		return nil, 0, false, err
 	}
-	log.Warn("IntrinsicGas Paid")
+	log.Warn("TransitionDb: IntrinsicGas Paid")
 	if err = st.useGas(gas); err != nil {
-		log.Warn("st.useGas Error", "err", err, "gas", gas)
+		log.Warn("TransitionDb: st.useGas Error", "err", err, "gas", gas)
 		return nil, 0, false, err
 	}
 
