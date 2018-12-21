@@ -131,8 +131,8 @@ var big8 = big.NewInt(8)
 
 func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 	if tx.IsPrivate() {
-		log.Warn("private tx: EIP155Signer using HomesteadSigner to retrieve sender")
-		return HomesteadSigner{}.Sender(tx)
+		log.Warn("private tx: EIP155Signer using PrivateTxSigner to retrieve sender")
+		return PrivateTxSigner{}.Sender(tx)
 	}
 	if !tx.Protected() {
 		return HomesteadSigner{}.Sender(tx)
@@ -149,7 +149,7 @@ func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (s EIP155Signer) SignatureValues(tx *Transaction, sig []byte) (R, S, V *big.Int, err error) {
 	if tx.IsPrivate() {
-		return HomesteadSigner{}.SignatureValues(tx, sig)
+		return PrivateTxSigner{}.SignatureValues(tx, sig)
 	}
 	R, S, V, err = HomesteadSigner{}.SignatureValues(tx, sig)
 	if err != nil {
@@ -188,11 +188,17 @@ func (s HomesteadSigner) Equal(s2 Signer) bool {
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (hs HomesteadSigner) SignatureValues(tx *Transaction, sig []byte) (r, s, v *big.Int, err error) {
+	if tx.IsPrivate() {
+		return PrivateTxSigner{}.SignatureValues(tx, sig)
+	}
 	return hs.FrontierSigner.SignatureValues(tx, sig)
 }
 
 func (hs HomesteadSigner) Sender(tx *Transaction) (common.Address, error) {
-	return recoverPlain(hs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true, tx.IsPrivate())
+	if tx.IsPrivate() {
+		return PrivateTxSigner{}.Sender(tx)
+	}
+	return recoverPlain(hs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true, false)
 }
 
 type FrontierSigner struct{}
