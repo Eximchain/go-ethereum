@@ -236,6 +236,24 @@ func (fs FrontierSigner) Sender(tx *Transaction) (common.Address, error) {
 	return recoverPlain(fs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, false, tx.IsPrivate())
 }
 
+// PrivateTxSigner handles private transaction signatures
+type PrivateTxSigner struct{ FrontierSigner }
+
+func (ps PrivateTxSigner) Equal(s2 Signer) bool {
+	_, ok := s2.(PrivateTxSigner)
+	return ok
+}
+
+// SignatureValues returns signature values. This signature
+// needs to be in the [R || S || V] format where V is 0 or 1.
+func (ps PrivateTxSigner) SignatureValues(tx *Transaction, sig []byte) (r, s, v *big.Int, err error) {
+	return ps.FrontierSigner.SignatureValues(tx, sig)
+}
+
+func (ps PrivateTxSigner) Sender(tx *Transaction) (common.Address, error) {
+	return recoverPlain(ps.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true, true)
+}
+
 func recoverPlain(sighash common.Hash, R, S, Vb *big.Int, homestead bool, isPrivate bool) (common.Address, error) {
 	if Vb.BitLen() > 8 {
 		return common.Address{}, ErrInvalidSig
