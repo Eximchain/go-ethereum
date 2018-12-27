@@ -24,6 +24,7 @@ import (
 	"github.com/eximchain/go-ethereum/common"
 	"github.com/eximchain/go-ethereum/core/state"
 	"github.com/eximchain/go-ethereum/crypto"
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/params"
 )
 
@@ -392,12 +393,15 @@ func (evm *EVM) StaticCall(caller ContractRef, addr common.Address, input []byte
 
 // create creates a new contract using code as deployment code.
 func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.Int, address common.Address) ([]byte, common.Address, uint64, error) {
+	log.Warn("evm.create start", "evm.depth", evm.depth)
 	// Depth check execution. Fail if we're trying to execute above the
 	// limit.
 	if evm.depth > int(params.CallCreateDepth) {
+		log.Warn("evm.create: ErrDepth")
 		return nil, common.Address{}, gas, ErrDepth
 	}
 	if !evm.CanTransfer(evm.StateDB, caller.Address(), value) {
+		log.Warn("evm.create: ErrInsufficientBalance")
 		return nil, common.Address{}, gas, ErrInsufficientBalance
 	}
 
@@ -411,8 +415,10 @@ func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.I
 	// are the same. from state processor
 	var creatorStateDb StateDB
 	if evm.Depth() > 0 {
+		log.Warn("evm.state: creatorStateDb=evm.privateState")
 		creatorStateDb = evm.privateState
 	} else {
+		log.Warn("evm.state: creatorStateDb=evm.publicState")
 		creatorStateDb = evm.publicState
 	}
 
@@ -423,6 +429,7 @@ func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.I
 	// Ensure there's no existing contract already at the designated address
 	contractHash := evm.StateDB.GetCodeHash(contractAddr)
 	if evm.StateDB.GetNonce(contractAddr) != 0 || (contractHash != (common.Hash{}) && contractHash != emptyCodeHash) {
+		log.Warn("evm.create: ErrContractAddressCollision")
 		return nil, common.Address{}, 0, ErrContractAddressCollision
 	}
 	// Create a new account on the state
@@ -434,8 +441,10 @@ func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.I
 	// DONE: skip transfer if value /= 0 (see note: Quorum, States, and Value Transfer)
 	if value.Sign() != 0 {
 		if evm.quorumReadOnly {
+			log.Warn("evm.create: ErrReadOnlyValueTransfer")
 			return nil, common.Address{}, gas, ErrReadOnlyValueTransfer
 		}
+		log.Warn("evm.create: calling evm.Transfer", "caller.Address()", caller.Address(), "contractAddr", contractAddr, "value", value)
 		evm.Transfer(evm.StateDB, caller.Address(), contractAddr, value)
 	}
 
@@ -443,30 +452,42 @@ func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.I
 	// EVM. The contract is a scoped environment for this execution context
 	// only.
 	contract := NewContract(caller, AccountRef(contractAddr), value, gas)
+	log.Warn("evm.create: new contract created", "contract", contract, "value", value, "gas", gas)
 	contract.SetCallCode(&contractAddr, crypto.Keccak256Hash(code), code)
+	log.Warn("evm.create: call code set", "crypto.Keccak256Hash(code)", crypto.Keccak256Hash(code), "code", code)
 
 	if evm.vmConfig.NoRecursion && evm.depth > 0 {
+		log.Warn("evm.create: no recursion")
 		return nil, address, gas, nil
 	}
 
 	if evm.vmConfig.Debug && evm.depth == 0 {
+		log.Warn("evm.create: debug mode")
 		evm.vmConfig.Tracer.CaptureStart(caller.Address(), address, true, code, gas, value)
 	}
 	start := time.Now()
 
+	log.Warn("evm.create: calling run", "evm", evm, "contract", contract)
 	ret, err := run(evm, contract, nil)
+	log.Warn("evm.create: run call complete", "ret", ret, "err", err)
 
 	// check whether the max code size has been exceeded
 	maxCodeSizeExceeded := evm.ChainConfig().IsEIP158(evm.BlockNumber) && len(ret) > params.MaxCodeSize
+	if maxCodeSizeExceeded {
+		log.Warn("evm.create: max code size exceeded!", "len(ret)", len(ret), "params.MaxCodeSize", params.MaxCodeSize)
+	}
 	// if the contract creation ran successfully and no errors were returned
 	// calculate the gas required to store the code. If the code could not
 	// be stored due to not enough gas set an error and let it be handled
 	// by the error checking condition below.
 	if err == nil && !maxCodeSizeExceeded {
 		createDataGas := uint64(len(ret)) * params.CreateDataGas
+		log.Warn("evm.create: createDataGas determined", "createDataGas", createDataGas, "params.CreateDataGas", params.CreateDataGas)
 		if contract.UseGas(createDataGas) {
+			log.Warn("evm.create: setting code", "address", address, "ret", ret)
 			evm.StateDB.SetCode(address, ret)
 		} else {
+			log.Warn("evm.create: gas error setting code, ErrCodeStoreOutOfGas")
 			err = ErrCodeStoreOutOfGas
 		}
 	}
@@ -475,18 +496,23 @@ func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.I
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in homestead this also counts for code storage gas errors.
 	if maxCodeSizeExceeded || (err != nil && (evm.ChainConfig().IsHomestead(evm.BlockNumber) || err != ErrCodeStoreOutOfGas)) {
+		log.Warn("evm.create: reverting contract creation", "maxCodeSizeExceeded", maxCodeSizeExceeded, "err", err, "isHomestead", evm.ChainConfig().IsHomestead(evm.BlockNumber))
 		evm.StateDB.RevertToSnapshot(snapshot)
 		if err != errExecutionReverted {
+			log.Warn("evm.create: consuming remaining gas")
 			contract.UseGas(contract.Gas)
 		}
 	}
 	// Assign err if contract code size exceeds the max while the err is still empty.
 	if maxCodeSizeExceeded && err == nil {
+		log.Warn("evm.create: setting errMaxCodeSizeExceeded")
 		err = errMaxCodeSizeExceeded
 	}
 	if evm.vmConfig.Debug && evm.depth == 0 {
 		evm.vmConfig.Tracer.CaptureEnd(ret, gas-contract.Gas, time.Since(start), err)
 	}
+
+	log.Warn("evm.create: Returning", "ret", ret, "address", address, "contract.Gas", contract.Gas, "err", err)
 	return ret, address, contract.Gas, err
 
 }

@@ -269,7 +269,13 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 		vmerr error
 	)
 	if contractCreation {
-		ret, _, st.gas, vmerr = evm.Create(sender, data, st.gas, st.value)
+		if isPrivate {
+			log.Warn("TransitionDb: Creating private contract in EVM", "sender", sender, "data", data, "st.gas", st.gas, "st.value", st.value)
+		} else {
+			log.Warn("TransitionDb: Creating public contract in EVM", "sender", sender, "data", data, "st.gas", st.gas, "st.value", st.value)
+		}
+		ret, contractAddr, st.gas, vmerr = evm.Create(sender, data, st.gas, st.value)
+		log.Warn("TransitionDb: evm.Create call complete", "ret", ret, "contractAddr", contractAddr, "st.gas", st.gas, "vmerr", vmerr)
 	} else {
 		// DONE: Increment the account nonce only if the transaction isn't private.
 		// If the transaction is private it has already been incremented on
