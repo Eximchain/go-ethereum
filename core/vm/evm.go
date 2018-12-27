@@ -467,9 +467,9 @@ func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.I
 	}
 	start := time.Now()
 
-	log.Warn("evm.create: calling run", "evm", evm, "contract", contract)
+	log.Info("evm.create: calling run", "evm", evm, "contract", contract)
 	ret, err := run(evm, contract, nil)
-	log.Warn("evm.create: run call complete", "ret", ret, "err", err)
+	log.Info("evm.create: run call complete", "ret", ret, "err", err)
 
 	// check whether the max code size has been exceeded
 	maxCodeSizeExceeded := evm.ChainConfig().IsEIP158(evm.BlockNumber) && len(ret) > params.MaxCodeSize
