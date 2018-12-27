@@ -267,6 +267,8 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 		// not assigned to err, except for insufficient balance
 		// error.
 		vmerr error
+
+		contractAddr common.Address
 	)
 	if contractCreation {
 		if isPrivate {
