@@ -84,7 +84,7 @@ type PrivateMessage interface {
 
 // IntrinsicGas computes the 'intrinsic gas' for a message with the given data.
 func IntrinsicGas(data []byte, contractCreation, homestead bool) (uint64, error) {
-	log.Warn("IntrinsicGas start with args", "data", data, "contractCreation", contractCreation, "homestead", homestead)
+	log.Info("IntrinsicGas start with args", "data", data, "contractCreation", contractCreation, "homestead", homestead)
 	// Set the starting gas for the raw transaction
 	var gas uint64
 	if contractCreation && homestead {
@@ -92,7 +92,7 @@ func IntrinsicGas(data []byte, contractCreation, homestead bool) (uint64, error)
 	} else {
 		gas = params.TxGas
 	}
-	log.Warn("IntrinsicGas starting gas for raw transaction", "gas", gas)
+	log.Info("IntrinsicGas starting gas for raw transaction", "gas", gas)
 	// Bump the required gas by the amount of transactional data
 	if len(data) > 0 {
 		// Zero and non-zero bytes are priced differently
@@ -108,7 +108,7 @@ func IntrinsicGas(data []byte, contractCreation, homestead bool) (uint64, error)
 			return 0, vm.ErrOutOfGas
 		}
 		gas += nz * params.TxDataNonZeroGas
-		log.Warn("IntrinsicGas after data nonzero gas", "gas", gas)
+		log.Info("IntrinsicGas after data nonzero gas", "gas", gas)
 
 		z := uint64(len(data)) - nz
 		if (math.MaxUint64-gas)/params.TxDataZeroGas < z {
@@ -116,9 +116,9 @@ func IntrinsicGas(data []byte, contractCreation, homestead bool) (uint64, error)
 			return 0, vm.ErrOutOfGas
 		}
 		gas += z * params.TxDataZeroGas
-		log.Warn("IntrinsicGas after data zero gas", "gas", gas)
+		log.Info("IntrinsicGas after data zero gas", "gas", gas)
 	}
-	log.Warn("IntrinsicGas before return", "gas", gas)
+	log.Info("IntrinsicGas before return", "gas", gas)
 	return gas, nil
 }
 
@@ -255,7 +255,7 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 		log.Warn("TransitionDb: IntrinsicGas Error", "err", err)
 		return nil, 0, false, err
 	}
-	log.Warn("TransitionDb: IntrinsicGas Paid")
+	log.Info("TransitionDb: IntrinsicGas Paid")
 	if err = st.useGas(gas); err != nil {
 		log.Warn("TransitionDb: st.useGas Error", "err", err, "gas", gas)
 		return nil, 0, false, err
