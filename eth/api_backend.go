@@ -100,8 +100,8 @@ func (b *EthAPIBackend) StateAndHeaderByNumber(ctx context.Context, blockNr rpc.
 		return nil, nil, err
 	}
 	// TODO: private state
-	stateDb, _, err := b.eth.BlockChain().StateAt(header.Root)
-	return stateDb, header, err
+	_, privateStateDb, err := b.eth.BlockChain().StateAt(header.Root)
+	return privateStateDb, header, err
 }
 
 func (b *EthAPIBackend) GetBlock(ctx context.Context, hash common.Hash) (*types.Block, error) {
