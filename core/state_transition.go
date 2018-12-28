@@ -297,7 +297,7 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 			return nil, 0, false, nil
 		}
 		//DONE: rabbit hole
-		log.Warn("TransitionDb: Making EVM call", "sender", sender, "to", to, "data", data, "st.gas", st.gas, "st.value", st.value)
+		log.Info("TransitionDb: Making EVM call", "sender", sender, "to", to, "data", data, "st.gas", st.gas, "st.value", st.value)
 		ret, st.gas, vmerr = evm.Call(sender, to, data, st.gas, st.value)
 	}
 	if vmerr != nil {
@@ -310,16 +310,14 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 			return nil, 0, false, vmerr
 		}
 	}
-	log.Warn("TransitionDb: EVM call returned without error", "ret", ret, "st.gas", st.gas)
+	log.Info("TransitionDb: EVM call returned without error", "ret", ret, "st.gas", st.gas)
 	st.refundGas()
-	log.Warn("TransitionDb: refundGas complete")
 	st.state.AddBalance(st.evm.Coinbase, new(big.Int).Mul(new(big.Int).SetUint64(st.gasUsed()), st.gasPrice))
-	log.Warn("TransitionDb: st.state.AddBalance complete")
 	if isPrivate {
-		log.Warn("TransitionDb: private transaction returning", "ret", ret, "vmerr != nil", vmerr != nil, "err", err)
+		log.Info("TransitionDb: private transaction returning", "ret", ret, "vmerr != nil", vmerr != nil, "err", err)
 		return ret, 0, vmerr != nil, err
 	}
-	log.Warn("TransitionDb: public transaction returning", "ret", ret, "st.gasUsed()", st.gasUsed(), "vmerr != nil", vmerr != nil, "err", err)
+	log.Info("TransitionDb: public transaction returning", "ret", ret, "st.gasUsed()", st.gasUsed(), "vmerr != nil", vmerr != nil, "err", err)
 	return ret, st.gasUsed(), vmerr != nil, err
 }
 
