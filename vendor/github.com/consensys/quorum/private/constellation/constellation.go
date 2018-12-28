@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -22,16 +23,21 @@ var (
 
 func (g *Constellation) Send(data []byte, from string, to []string) (out []byte, err error) {
 	if g.isConstellationNotInUse {
+		log.Warn("constellation: Send error: ErrConstellationIsntInit")
 		return nil, ErrConstellationIsntInit
 	}
-	if g.node.usegrpc{
+	if g.node.usegrpc {
+		log.Warn("constellation.Send: sending payload via Grpc")
 		out, err = g.node.SendPayloadGrpc(data, from, to)
 	} else {
+		log.Warn("constellation.Send: sending payload without Grpc")
 		out, err = g.node.SendPayload(data, from, to)
 	}
 	if err != nil {
+		log.Warn("constellation.Send: error sending payload", "err", err)
 		return nil, err
 	}
+	log.Warn("constellation.Send: Setting cache value")
 	g.c.Set(string(out), data, cache.DefaultExpiration)
 	return out, nil
 }
@@ -53,7 +59,7 @@ func (g *Constellation) Receive(data []byte) ([]byte, error) {
 		return x.([]byte), nil
 	}
 	var pl []byte
-	if g.node.usegrpc{
+	if g.node.usegrpc {
 		pl, _ = g.node.ReceivePayloadGrpc(data)
 	} else {
 		pl, _ = g.node.ReceivePayload(data)
@@ -79,7 +85,7 @@ func New(path string) (*Constellation, error) {
 	} else {
 		cfg = &Config{
 			Socket: path,
-			Grpc: true,
+			Grpc:   true,
 		}
 	}
 	n, err := NewClient(cfg, cfg.Grpc)
@@ -91,8 +97,8 @@ func New(path string) (*Constellation, error) {
 		return nil, err
 	}
 	return &Constellation{
-		node: n,
-		c:    cache.New(5*time.Minute, 5*time.Minute),
+		node:                    n,
+		c:                       cache.New(5*time.Minute, 5*time.Minute),
 		isConstellationNotInUse: false,
 	}, nil
 }
@@ -100,8 +106,8 @@ func New(path string) (*Constellation, error) {
 func MustNew(path string) *Constellation {
 	if strings.EqualFold(path, "ignore") {
 		return &Constellation{
-			node: nil,
-			c:    nil,
+			node:                    nil,
+			c:                       nil,
 			isConstellationNotInUse: true,
 		}
 	}

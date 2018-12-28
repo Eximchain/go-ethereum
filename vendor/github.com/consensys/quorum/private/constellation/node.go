@@ -5,22 +5,25 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/blk-io/chimera-api/chimera"
 	"github.com/tv42/httpunix"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
-	"log"
-	"github.com/blk-io/chimera-api/chimera"
+
+	ethlog "github.com/eximchain/go-ethereum/log"
 )
 
 func launchNode(cfgPath string) (*exec.Cmd, error) {
+	ethlog.Warn("constellation.launchNode: Launching node (unexpected)")
 	cmd := exec.Command("constellation-node", cfgPath)
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
@@ -65,11 +68,11 @@ func httpClient() *http.Client {
 	}
 }
 
-func grpcClient(socketPath string) *Client{
- 	var client Client
- 	client.usegrpc = true
- 	client.grpcSocketPath = socketPath
- 	return &client
+func grpcClient(socketPath string) *Client {
+	var client Client
+	client.usegrpc = true
+	client.grpcSocketPath = socketPath
+	return &client
 }
 
 func UpCheck(c *Client) error {
@@ -99,13 +102,13 @@ func UpCheck(c *Client) error {
 }
 
 type Client struct {
-	httpClient *http.Client
-	BaseURL    string
-	usegrpc bool
+	httpClient     *http.Client
+	BaseURL        string
+	usegrpc        bool
 	grpcSocketPath string
 }
 
-func (c *Client) SendPayloadGrpc(pl []byte, b64From string, b64To []string) ([]byte, error){
+func (c *Client) SendPayloadGrpc(pl []byte, b64From string, b64To []string) ([]byte, error) {
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial(fmt.Sprintf("passthrough:///unix://%s", c.grpcSocketPath), grpc.WithInsecure())
 	if err != nil {
@@ -114,13 +117,16 @@ func (c *Client) SendPayloadGrpc(pl []byte, b64From string, b64To []string) ([]b
 	defer conn.Close()
 	cli := chimera.NewClientClient(conn)
 
-	if cli == nil{
+	if cli == nil {
 		return nil, errors.New("Crux client is nil")
 	}
-	resp, err := cli.Send(context.Background(), &chimera.SendRequest{Payload: pl, From: b64From,To: b64To})
+	ethlog.Warn("constellation.SendPayloadGrpc: Sending payload to crux client", "cli", cli, "context.Background()", context.Background(), "payload", pl, "from", b64From, "to", b64To)
+	resp, err := cli.Send(context.Background(), &chimera.SendRequest{Payload: pl, From: b64From, To: b64To})
 	if err != nil {
+		ethlog.Warn("constellation.SendPayloadGrpc: Error sending payload to crux", "err", err)
 		return nil, fmt.Errorf("Send Payload failed: %v", err)
 	}
+	ethlog.Warn("constellation.SendPayloadGrpc: returning", "resp", resp)
 	return resp.Key, nil
 }
 
@@ -162,7 +168,7 @@ func (c *Client) ReceivePayloadGrpc(data []byte) ([]byte, interface{}) {
 	defer conn.Close()
 	cli := chimera.NewClientClient(conn)
 
-	if cli == nil{
+	if cli == nil {
 		return nil, errors.New("Crux client is nil")
 	}
 	resp, err := cli.Receive(context.Background(), &chimera.ReceiveRequest{Key: data})
@@ -197,7 +203,7 @@ func (c *Client) ReceivePayload(key []byte) ([]byte, error) {
 }
 
 func NewClient(config *Config, grpc bool) (*Client, error) {
-	if grpc{
+	if grpc {
 		var path string
 		var err error
 		if config.WorkDir == "" {
