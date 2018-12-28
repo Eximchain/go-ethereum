@@ -87,7 +87,7 @@ func (b *EthAPIBackend) BlockByNumber(ctx context.Context, blockNr rpc.BlockNumb
 	return b.eth.blockchain.GetBlockByNumber(uint64(blockNr)), nil
 }
 
-func (b *EthAPIBackend) StateAndHeaderByNumber(ctx context.Context, blockNr rpc.BlockNumber) (*state.StateDB, *types.Header, error) {
+func (b *EthAPIBackend) StateAndHeaderByNumber(ctx context.Context, blockNr rpc.BlockNumber) (vm.MinimalApiState, *types.Header, error) {
 	// Pending state is only known by the miner
 	if blockNr == rpc.PendingBlockNumber {
 		// DEBUG: private state
@@ -99,9 +99,9 @@ func (b *EthAPIBackend) StateAndHeaderByNumber(ctx context.Context, blockNr rpc.
 	if header == nil || err != nil {
 		return nil, nil, err
 	}
-	// TODO: private state
-	stateDb, _, err := b.eth.BlockChain().StateAt(header.Root)
-	return stateDb, header, err
+	// DONE: private state
+	stateDb, privateStateDb, err := b.eth.BlockChain().StateAt(header.Root)
+	return EthApiState{stateDb, privateStateDb}, header, err
 }
 
 func (b *EthAPIBackend) GetBlock(ctx context.Context, hash common.Hash) (*types.Block, error) {
@@ -135,14 +135,15 @@ func (b *EthAPIBackend) GetTd(blockHash common.Hash) *big.Int {
 	return b.eth.blockchain.GetTdByHash(blockHash)
 }
 
-func (b *EthAPIBackend) GetEVM(ctx context.Context, msg core.Message, state, privateState *state.StateDB, header *types.Header, vmCfg vm.Config) (*vm.EVM, func() error, error) {
-	state.SetBalance(msg.From(), math.MaxBig256)
+func (b *EthAPIBackend) GetEVM(ctx context.Context, msg core.Message, apiState vm.MinimalApiState, header *types.Header, vmCfg vm.Config) (*vm.EVM, func() error, error) {
+	statedb := apiState.(EthApiState)
+	statedb.state.SetBalance(msg.From(), math.MaxBig256)
 	vmError := func() error { return nil }
 
 	context := core.NewEVMContext(msg, header, b.eth.BlockChain(), nil)
 	// DEBUG: private state
 	// DONE: inject private state to environment
-	return vm.NewEVM(context, state, privateState, b.eth.chainConfig, vmCfg), vmError, nil
+	return vm.NewEVM(context, statedb.state, statedb.privateState, b.eth.chainConfig, vmCfg), vmError, nil
 }
 
 func (b *EthAPIBackend) SubscribeRemovedLogsEvent(ch chan<- core.RemovedLogsEvent) event.Subscription {
@@ -234,4 +235,40 @@ func (b *EthAPIBackend) ServiceFilter(ctx context.Context, session *bloombits.Ma
 	for i := 0; i < bloomFilterThreads; i++ {
 		go session.Multiplex(bloomRetrievalBatch, bloomRetrievalWait, b.eth.bloomRequests)
 	}
+}
+
+type EthApiState struct {
+	state, privateState *state.StateDB
+}
+
+func (s EthApiState) GetBalance(addr common.Address) *big.Int {
+	if s.privateState.Exist(addr) {
+		return s.privateState.GetBalance(addr)
+	}
+	return s.state.GetBalance(addr)
+}
+
+func (s EthApiState) GetCode(addr common.Address) []byte {
+	if s.privateState.Exist(addr) {
+		return s.privateState.GetCode(addr)
+	}
+	return s.state.GetCode(addr)
+}
+
+func (s EthApiState) GetState(a common.Address, b common.Hash) common.Hash {
+	if s.privateState.Exist(a) {
+		return s.privateState.GetState(a, b)
+	}
+	return s.state.GetState(a, b)
+}
+
+func (s EthApiState) GetNonce(addr common.Address) uint64 {
+	if s.privateState.Exist(addr) {
+		return s.privateState.GetNonce(addr)
+	}
+	return s.state.GetNonce(addr)
+}
+
+func (s EthApiState) Error() error {
+	return nil
 }

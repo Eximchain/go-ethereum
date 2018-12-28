@@ -23,6 +23,15 @@ import (
 	"github.com/eximchain/go-ethereum/core/types"
 )
 
+// Quorum uses a cut-down StateDB, MinimalApiState.
+type MinimalApiState interface {
+	Error() error
+	GetBalance(addr common.Address) *big.Int
+	GetCode(addr common.Address) []byte
+	GetState(a common.Address, b common.Hash) common.Hash
+	GetNonce(addr common.Address) uint64
+}
+
 // StateDB is an EVM database for full state querying.
 type StateDB interface {
 	CreateAccount(common.Address)
