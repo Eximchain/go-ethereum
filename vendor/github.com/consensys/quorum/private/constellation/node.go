@@ -171,10 +171,13 @@ func (c *Client) ReceivePayloadGrpc(data []byte) ([]byte, interface{}) {
 	if cli == nil {
 		return nil, errors.New("Crux client is nil")
 	}
+	ethlog.Warn("constellation.ReceivePayloadGrpc: Receiving payload from crux client", "cli", cli, "context.Background()", context.Background(), "data", data)
 	resp, err := cli.Receive(context.Background(), &chimera.ReceiveRequest{Key: data})
 	if err != nil {
+		ethlog.Warn("constellation.ReceivePayloadGrpc: Error receiving payload from crux", "err", err)
 		return nil, fmt.Errorf("Receive Payload failed: %v", err)
 	}
+	ethlog.Warn("constellation.ReceivePayloadGrpc: returning", "resp", resp)
 	return resp.Payload, nil
 }
 
