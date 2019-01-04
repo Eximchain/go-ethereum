@@ -253,22 +253,28 @@ func (s EthApiState) GetBalance(addr common.Address) *big.Int {
 
 func (s EthApiState) GetCode(addr common.Address) []byte {
 	if s.privateState.Exist(addr) {
+		log.Warn("EthApiState: GetCode private state")
 		return s.privateState.GetCode(addr)
 	}
+	log.Warn("EthApiState: GetCode public state")
 	return s.state.GetCode(addr)
 }
 
 func (s EthApiState) GetState(a common.Address, b common.Hash) common.Hash {
 	if s.privateState.Exist(a) {
+		log.Warn("EthApiState: GetState private state")
 		return s.privateState.GetState(a, b)
 	}
+	log.Warn("EthApiState: GetState public state")
 	return s.state.GetState(a, b)
 }
 
 func (s EthApiState) GetNonce(addr common.Address) uint64 {
 	if s.privateState.Exist(addr) {
+		log.Warn("EthApiState: GetNonce private state")
 		return s.privateState.GetNonce(addr)
 	}
+	log.Warn("EthApiState: GetNonce public state")
 	return s.state.GetNonce(addr)
 }
 
