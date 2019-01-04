@@ -415,10 +415,10 @@ func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.I
 	// are the same. from state processor
 	var creatorStateDb StateDB
 	if evm.Depth() > 0 {
-		log.Warn("evm.state: creatorStateDb=evm.privateState")
+		log.Warn("evm.create: creatorStateDb=evm.privateState")
 		creatorStateDb = evm.privateState
 	} else {
-		log.Warn("evm.state: creatorStateDb=evm.publicState")
+		log.Warn("evm.create: creatorStateDb=evm.publicState")
 		creatorStateDb = evm.publicState
 	}
 
@@ -426,6 +426,7 @@ func (evm *EVM) create(caller ContractRef, code []byte, gas uint64, value *big.I
 	creatorStateDb.SetNonce(caller.Address(), nonce+1)
 
 	contractAddr := crypto.CreateAddress(caller.Address(), nonce)
+	log.Warn("evm.create: contract address created", "contractAddr", contractAddr, "caller.Address()", caller.Address(), "nonce", nonce)
 	// Ensure there's no existing contract already at the designated address
 	contractHash := evm.StateDB.GetCodeHash(contractAddr)
 	if evm.StateDB.GetNonce(contractAddr) != 0 || (contractHash != (common.Hash{}) && contractHash != emptyCodeHash) {
