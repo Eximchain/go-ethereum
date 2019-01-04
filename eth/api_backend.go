@@ -33,6 +33,7 @@ import (
 	"github.com/eximchain/go-ethereum/eth/gasprice"
 	"github.com/eximchain/go-ethereum/ethdb"
 	"github.com/eximchain/go-ethereum/event"
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/params"
 	"github.com/eximchain/go-ethereum/rpc"
 )
@@ -243,8 +244,10 @@ type EthApiState struct {
 
 func (s EthApiState) GetBalance(addr common.Address) *big.Int {
 	if s.privateState.Exist(addr) {
+		log.Warn("EthApiState: GetBalance private state")
 		return s.privateState.GetBalance(addr)
 	}
+	log.Warn("EthApiState: GetBalance public state")
 	return s.state.GetBalance(addr)
 }
 
