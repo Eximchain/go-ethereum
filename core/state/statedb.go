@@ -306,7 +306,7 @@ func (self *StateDB) SetNonce(addr common.Address, nonce uint64) {
 }
 
 func (self *StateDB) SetCode(addr common.Address, code []byte) {
-	log.Warn("statedb.SetCode: getting new state object for addr", "addr", addr)
+	log.Warn("statedb.SetCode: getting new state object for addr", "addr", addr, "code", code)
 	stateObject := self.GetOrNewStateObject(addr)
 	if stateObject != nil {
 		log.Warn("statedb.SetCode: Calling stateObject.SetCode", "codeHash", crypto.Keccak256Hash(code))
