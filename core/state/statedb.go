@@ -208,6 +208,7 @@ func (self *StateDB) GetNonce(addr common.Address) uint64 {
 func (self *StateDB) GetCode(addr common.Address) []byte {
 	log.Warn("statedb.GetCode: getting state object for addr", "addr", addr)
 	stateObject := self.getStateObject(addr)
+	log.Warn("statedb.GetCode: state object found", "addr", addr, "stateObject", stateObject)
 	if stateObject != nil {
 		log.Warn("statedb.GetCode: calling stateObject.Code")
 		return stateObject.Code(self.db)
