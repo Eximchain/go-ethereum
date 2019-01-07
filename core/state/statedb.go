@@ -206,8 +206,10 @@ func (self *StateDB) GetNonce(addr common.Address) uint64 {
 }
 
 func (self *StateDB) GetCode(addr common.Address) []byte {
+	log.Warn("statedb.GetCode: getting state object for addr", "addr", addr)
 	stateObject := self.getStateObject(addr)
 	if stateObject != nil {
+		log.Warn("statedb.GetCode: calling stateObject.Code")
 		return stateObject.Code(self.db)
 	}
 	return nil
@@ -303,8 +305,10 @@ func (self *StateDB) SetNonce(addr common.Address, nonce uint64) {
 }
 
 func (self *StateDB) SetCode(addr common.Address, code []byte) {
+	log.Warn("statedb.SetCode: getting new state object for addr", "addr", addr)
 	stateObject := self.GetOrNewStateObject(addr)
 	if stateObject != nil {
+		log.Warn("statedb.SetCode: Calling stateObject.SetCode", "codeHash", crypto.Keccak256Hash(code))
 		stateObject.SetCode(crypto.Keccak256Hash(code), code)
 	}
 }
