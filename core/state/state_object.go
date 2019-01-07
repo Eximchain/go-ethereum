@@ -306,7 +306,7 @@ func (self *stateObject) Code(db Database) []byte {
 		return self.code
 	}
 	if bytes.Equal(self.CodeHash(), emptyCodeHash) {
-		log.Warn("stateObject.Code: code hash is empty", "self.CodeHash()", self.CodeHash())
+		log.Warn("stateObject.Code: code hash is empty", "self.CodeHash()", self.CodeHash(), "emptyCodeHash", emptyCodeHash)
 		return nil
 	}
 	log.Warn("stateObject.Code: calling db.ContractCode")
