@@ -358,11 +358,9 @@ func (db *Database) Node(hash common.Hash) ([]byte, error) {
 	db.lock.RUnlock()
 
 	if node != nil {
-		log.Warn("trie.db.Node: Returning node from cache", "node", node)
 		return node.rlp(), nil
 	}
 	// Content unavailable in memory, attempt to retrieve from disk
-	log.Warn("trie.db.Node: Returning node from disk")
 	return db.diskdb.Get(hash[:])
 }
 
