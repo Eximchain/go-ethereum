@@ -299,12 +299,13 @@ func (c *stateObject) Address() common.Address {
 // Code returns the contract code associated with this object, if any.
 func (self *stateObject) Code(db Database) []byte {
 	log.Warn("stateObject.Code: begin")
+	log.Warn("stateObject.Code: printing self", "self", self)
 	if self.code != nil {
 		log.Warn("stateObject.Code returning self.code")
 		return self.code
 	}
 	if bytes.Equal(self.CodeHash(), emptyCodeHash) {
-		log.Warn("stateObject.Code: code hash is empty")
+		log.Warn("stateObject.Code: code hash is empty", "self.CodeHash()", self.CodeHash())
 		return nil
 	}
 	log.Warn("stateObject.Code: calling db.ContractCode")
