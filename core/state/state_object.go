@@ -24,6 +24,7 @@ import (
 
 	"github.com/eximchain/go-ethereum/common"
 	"github.com/eximchain/go-ethereum/crypto"
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/rlp"
 )
 
@@ -298,13 +299,17 @@ func (c *stateObject) Address() common.Address {
 // Code returns the contract code associated with this object, if any.
 func (self *stateObject) Code(db Database) []byte {
 	if self.code != nil {
+		log.Warn("stateObject.Code: returning self.code")
 		return self.code
 	}
 	if bytes.Equal(self.CodeHash(), emptyCodeHash) {
+		log.Warn("stateObject.Code: codehash is empty, returning nil")
 		return nil
 	}
+	log.Warn("stateObject.Code: Calling db.ContractCode", "self.addrHash", self.addrHash, "common.BytesToHash(self.CodeHash())", common.BytesToHash(self.CodeHash()))
 	code, err := db.ContractCode(self.addrHash, common.BytesToHash(self.CodeHash()))
 	if err != nil {
+		log.Warn("stateObject.Code: Error loading codehash", "self.CodeHash()", self.CodeHash(), "err", err)
 		self.setError(fmt.Errorf("can't load code hash %x: %v", self.CodeHash(), err))
 	}
 	self.code = code
@@ -313,6 +318,7 @@ func (self *stateObject) Code(db Database) []byte {
 
 func (self *stateObject) SetCode(codeHash common.Hash, code []byte) {
 	prevcode := self.Code(self.db.db)
+	log.Warn("stateObject.SetCode: journaling code change event", "prevcode", prevcode, "code", code)
 	self.db.journal.append(codeChange{
 		account:  &self.address,
 		prevhash: self.CodeHash(),
@@ -322,6 +328,7 @@ func (self *stateObject) SetCode(codeHash common.Hash, code []byte) {
 }
 
 func (self *stateObject) setCode(codeHash common.Hash, code []byte) {
+	log.Warn("stateObject.setCode: setting code in state", "addr", self.address)
 	self.code = code
 	self.data.CodeHash = codeHash[:]
 	self.dirtyCode = true

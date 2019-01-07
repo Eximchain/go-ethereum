@@ -22,6 +22,7 @@ import (
 
 	"github.com/eximchain/go-ethereum/common"
 	"github.com/eximchain/go-ethereum/ethdb"
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/trie"
 	lru "github.com/hashicorp/golang-lru"
 )
@@ -138,7 +139,9 @@ func (db *cachingDB) CopyTrie(t Trie) Trie {
 
 // ContractCode retrieves a particular contract's code.
 func (db *cachingDB) ContractCode(addrHash, codeHash common.Hash) ([]byte, error) {
+	log.Warn("db.ContractCode: retrieving contract code", "addrHash", addrHash, "codeHash", codeHash)
 	code, err := db.db.Node(codeHash)
+	log.Warn("db.ContractCode: code retrieved from db.db.Node(codeHash)", "code", code, "err", err)
 	if err == nil {
 		db.codeSizeCache.Add(codeHash, len(code))
 	}
