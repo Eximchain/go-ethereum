@@ -300,6 +300,7 @@ func (c *stateObject) Address() common.Address {
 func (self *stateObject) Code(db Database) []byte {
 	log.Warn("stateObject.Code: begin")
 	log.Warn("stateObject.Code: printing self", "self", self)
+	log.Warn("stateObject.Code: printing data", "self.data", self.data)
 	if self.code != nil {
 		log.Warn("stateObject.Code returning self.code")
 		return self.code
