@@ -24,6 +24,7 @@ import (
 
 	"github.com/eximchain/go-ethereum/common"
 	"github.com/eximchain/go-ethereum/crypto"
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/rlp"
 )
 
@@ -297,16 +298,22 @@ func (c *stateObject) Address() common.Address {
 
 // Code returns the contract code associated with this object, if any.
 func (self *stateObject) Code(db Database) []byte {
+	log.Warn("stateObject.Code: begin")
 	if self.code != nil {
+		log.Warn("stateObject.Code returning self.code")
 		return self.code
 	}
 	if bytes.Equal(self.CodeHash(), emptyCodeHash) {
+		log.Warn("stateObject.Code: code hash is empty")
 		return nil
 	}
+	log.Warn("stateObject.Code: calling db.ContractCode")
 	code, err := db.ContractCode(self.addrHash, common.BytesToHash(self.CodeHash()))
 	if err != nil {
+		log.Warn("stateObject.Code: error calling db.ContractCode", "err", err)
 		self.setError(fmt.Errorf("can't load code hash %x: %v", self.CodeHash(), err))
 	}
+	log.Warn("stateObject.Code: setting self.code", "code", code)
 	self.code = code
 	return code
 }
