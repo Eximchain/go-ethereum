@@ -1111,6 +1111,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		}
 		// If the header is a banned one, straight out abort
 		if BadHashes[block.Hash()] {
+			log.Warn("bc.reportBlock: Reporting ErrBlacklistedHash")
 			bc.reportBlock(block, nil, ErrBlacklistedHash)
 			return i, events, coalescedLogs, ErrBlacklistedHash
 		}
@@ -1121,6 +1122,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		if err == nil {
 			err = bc.Validator().ValidateBody(block)
 		}
+		log.Warn("bc.reportBlock: Location 1", "err", err)
 		switch {
 		case err == ErrKnownBlock:
 			// Block and state both already known. However if the current block is below
@@ -1180,6 +1182,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 			}
 
 		case err != nil:
+			log.Warn("bc.reportBlock: Location 1 triggered", "err", err)
 			bc.reportBlock(block, nil, err)
 			return i, events, coalescedLogs, err
 		}
@@ -1214,7 +1217,9 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		// of gas used in the process and return an error if any of the internal rules
 		// failed.
 		receipts, privateReceipts, logs, usedGas, err := bc.processor.Process(block, state, privateState, bc.vmConfig)
+		log.Warn("bc.reportBlock: Location 2", "err", err)
 		if err != nil {
+			log.Warn("bc.reportBlock: Location 2 triggered", "err", err)
 			bc.reportBlock(block, receipts, err)
 			return i, events, coalescedLogs, err
 		}
@@ -1222,7 +1227,9 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		// DONE: Validate the state using the default validator, verify header against smart contract state
 		// ensuring block was created by an elected block maker
 		err = bc.Validator().ValidateState(block, parent, state, receipts, usedGas)
+		log.Warn("bc.reportBlock: Location 3", "err", err)
 		if err != nil {
+			log.Warn("bc.reportBlock: Location 3 triggered", "err", err)
 			bc.reportBlock(block, receipts, err)
 			return i, events, coalescedLogs, err
 		}
