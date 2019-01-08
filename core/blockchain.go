@@ -1115,6 +1115,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 			bc.reportBlock(block, nil, ErrBlacklistedHash)
 			return i, events, coalescedLogs, ErrBlacklistedHash
 		}
+		log.Warn("insertChain: Processing block", "block.Number()", block.Number(), "block", block)
 		// Wait for the block's verification to complete
 		bstart := time.Now()
 
