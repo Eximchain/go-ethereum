@@ -128,7 +128,7 @@ var big8 = big.NewInt(8)
 
 func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 	if tx.IsPrivate() {
-		log.Warn("private tx: EIP155Signer using PrivateTxSigner to retrieve sender")
+		log.Info("private tx: EIP155Signer using PrivateTxSigner to retrieve sender")
 		return PrivateTxSigner{}.Sender(tx)
 	}
 	if !tx.Protected() {
@@ -274,7 +274,7 @@ func recoverPlain(sighash common.Hash, R, S, Vb *big.Int, homestead bool, isPriv
 		offset = 27
 	}
 	V := byte(Vb.Uint64() - offset)
-	log.Warn("recoverPlain V inspection", "V", int(V))
+	log.Info("recoverPlain V inspection", "V", int(V))
 	if !crypto.ValidateSignatureValues(V, R, S, homestead) {
 		return common.Address{}, ErrInvalidSig
 	}
@@ -287,11 +287,11 @@ func recoverPlain(sighash common.Hash, R, S, Vb *big.Int, homestead bool, isPriv
 	// recover the public key from the snature
 	pub, err := crypto.Ecrecover(sighash[:], sig)
 	if err != nil {
-		log.Warn("recoverPlain error recovering public key", "err", err)
+		log.Info("recoverPlain error recovering public key", "err", err)
 		return common.Address{}, err
 	}
 	if len(pub) == 0 || pub[0] != 4 {
-		log.Warn("recoverPlain error validating recovered public key", "pub", pub)
+		log.Info("recoverPlain error validating recovered public key", "pub", pub)
 		return common.Address{}, errors.New("invalid public key")
 	}
 	var addr common.Address
