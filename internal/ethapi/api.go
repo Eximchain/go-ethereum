@@ -1256,16 +1256,18 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 	isPrivate := args.PrivateFor != nil
 
 	if isPrivate {
+		log.Warn("crux debug branch public pool")
 		//Send private transaction to local Constellation node
+		log.Warn("send private tx data before constellation", "args.Data", args.Data)
 		log.Warn("sending private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
 		data, err = private.P.Send(data, args.PrivateFrom, args.PrivateFor)
 		log.Warn("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
-		log.Warn("crux debug branch public pool")
 		if err != nil {
 			return common.Hash{}, err
 		}
 		d := hexutil.Bytes(data)
 		args.Data = d
+		log.Warn("send private tx data after constellation", "args.Data", args.Data)
 	}
 
 	// Set some sanity defaults and terminate on failure
