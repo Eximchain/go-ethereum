@@ -379,6 +379,7 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 	isPrivate := args.PrivateFor != nil
 	if isPrivate {
 		data := []byte(args.Data)
+		log.Warn("send private tx data before constellation", "args.Data", args.Data)
 		log.Warn("sending private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
 		data, err := private.P.Send(data, args.PrivateFrom, args.PrivateFor)
 		log.Warn("sent private tx", "data", fmt.Sprintf("%x", data), "privatefrom", args.PrivateFrom, "privatefor", args.PrivateFor)
@@ -389,6 +390,7 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 		}
 		hexData := hexutil.Bytes(data)
 		args.Data = hexData
+		log.Warn("send private tx data after constellation", "args.Data", args.Data)
 	}
 
 	log.Warn("submitting private tx for signing:", "ctx", ctx, "args", args, "passwd", passwd)

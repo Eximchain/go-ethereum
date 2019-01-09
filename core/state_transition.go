@@ -234,7 +234,9 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 		isPrivate = true
 		//DONE: actually fetch the private transaction from constellation
 		//data, err = private.P.Receive(st.data)
+		log.Warn("receive private tx data before constellation", "st.data", st.data)
 		data, err = private.P.Receive(st.data)
+		log.Warn("receive private tx data after constellation", "data", data)
 		// Increment the public account nonce if:
 		// 1. Tx is private and *not* a participant of the group and either call or create
 		// 2. Tx is private we are part of the group and is a call
