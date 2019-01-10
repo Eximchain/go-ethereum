@@ -595,6 +595,7 @@ func (s *StateDB) Commit(deleteEmptyObjects bool) (root common.Hash, err error) 
 		case stateObject.suicided || (isDirty && deleteEmptyObjects && stateObject.empty()):
 			// If the object has been removed, don't bother syncing it
 			// and just mark it for deletion in the trie.
+			log.Warn("statedb.Commit: pruning state object", "stateObject", stateObject)
 			s.deleteStateObject(stateObject)
 		case isDirty:
 			// Write any contract code associated with the state object
