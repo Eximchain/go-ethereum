@@ -42,7 +42,7 @@ import (
 	"github.com/eximchain/go-ethereum/params"
 	"github.com/eximchain/go-ethereum/rlp"
 	"github.com/eximchain/go-ethereum/trie"
-	"github.com/hashicorp/golang-lru"
+	lru "github.com/hashicorp/golang-lru"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 )
 
@@ -1115,7 +1115,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 			bc.reportBlock(block, nil, ErrBlacklistedHash)
 			return i, events, coalescedLogs, ErrBlacklistedHash
 		}
-		log.Warn("insertChain: Processing block", "block.Number()", block.Number(), "block", block)
+		log.Warn("insertChain: Processing block", "block.Number()", block.Number(), "block", block, "block.Header()", block.Header(), "block.Transactions()", block.Transactions())
 		// Wait for the block's verification to complete
 		bstart := time.Now()
 
