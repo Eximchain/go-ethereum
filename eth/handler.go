@@ -691,6 +691,7 @@ func (pm *ProtocolManager) handleMsg(p *peer) error {
 // BroadcastBlock will either propagate a block to a subset of it's peers, or
 // will only announce it's availability (depending what's requested).
 func (pm *ProtocolManager) BroadcastBlock(block *types.Block, propagate bool) {
+	log.Warn("BroadcastBlock: Broadcasting block", "block.Number()", block.Number(), "block", block)
 	hash := block.Hash()
 	peers := pm.peers.PeersWithoutBlock(hash)
 
