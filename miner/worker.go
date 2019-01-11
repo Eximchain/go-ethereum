@@ -686,7 +686,11 @@ func (w *worker) commitTransaction(tx *types.Transaction, coinbase common.Addres
 	snap := w.current.state.Snapshot()
 	privateSnap := w.current.privateState.Snapshot()
 
+	beforeRoot := w.current.state.IntermediateRoot(w.config.IsEIP158(w.chain.CurrentBlock().Number()))
+	log.Warn("w.commitTransaction: state root before processing tx", "tx.Hash()", tx.Hash(), "beforeRoot", beforeRoot)
 	receipt, privateReceipt, _, err := core.ApplyTransaction(w.config, w.chain, &coinbase, w.current.gasPool, w.current.state, w.current.privateState, w.current.header, tx, &w.current.header.GasUsed, vm.Config{})
+	afterRoot := w.current.state.IntermediateRoot(w.config.IsEIP158(w.chain.CurrentBlock().Number()))
+	log.Warn("w.commitTransaction: state root after processing tx", "tx.Hash()", tx.Hash(), "afterRoot", afterRoot)
 	if err != nil {
 		w.current.state.RevertToSnapshot(snap)
 		w.current.privateState.RevertToSnapshot(privateSnap)

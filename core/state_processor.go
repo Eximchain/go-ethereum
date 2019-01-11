@@ -24,6 +24,7 @@ import (
 	"github.com/eximchain/go-ethereum/core/types"
 	"github.com/eximchain/go-ethereum/core/vm"
 	"github.com/eximchain/go-ethereum/crypto"
+	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/params"
 )
 
@@ -78,7 +79,11 @@ func (p *StateProcessor) Process(block *types.Block, statedb, privateState *stat
 		// for the public/private transaction, gas used and an error if the transaction failed,
 		// indicating the block was invalid.
 		// DONE: Test
+		beforeRoot := statedb.IntermediateRoot(p.config.IsEIP158(block.Number()))
+		log.Warn("p.Process: state root before processing tx", "tx.Hash()", tx.Hash(), "beforeRoot", beforeRoot)
 		receipt, privateReceipt, _, err := ApplyTransaction(p.config, p.bc, nil, gp, statedb, privateState, header, tx, usedGas, cfg)
+		afterRoot := statedb.IntermediateRoot(p.config.IsEIP158(block.Number()))
+		log.Warn("p.Process: state root after processing tx", "tx.Hash()", tx.Hash(), "afterRoot", afterRoot)
 		if err != nil {
 			return nil, nil, nil, 0, err
 		}
@@ -133,6 +138,7 @@ func ApplyTransaction(config *params.ChainConfig, bc ChainContext, author *commo
 		return nil, nil, 0, err
 	}
 	// Update the state with pending changes
+	// TODO: log
 	var root []byte
 	if config.IsByzantium(header.Number) {
 		statedb.Finalise(true)
