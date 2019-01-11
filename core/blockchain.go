@@ -1217,6 +1217,8 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		// initial state is based. It should return the public and private receipts generated, amount
 		// of gas used in the process and return an error if any of the internal rules
 		// failed.
+		oldRoot := state.IntermediateRoot(bc.chainConfig.IsEIP158(block.Number()))
+		log.Warn("bc.insertChain: state before processing block", "block.Number()", block.Number(), "oldRoot", oldRoot)
 		receipts, privateReceipts, logs, usedGas, err := bc.processor.Process(block, state, privateState, bc.vmConfig)
 		log.Info("bc.reportBlock: Location 2", "err", err)
 		if err != nil {
