@@ -63,7 +63,8 @@ func (ethash *Ethash) Seal(chain consensus.ChainReader, block *types.Block, resu
 		return nil
 	}
 
-	// TODO: Bail out if we're unauthorized to sign a block
+	// DONE: Bail out if we're unauthorized to sign a block
+	// Make this optional when runnign sealer tests
 	if ok, err := ethash.isBlockMaker(block.Coinbase()); !ok {
 		return err
 	}

@@ -387,6 +387,7 @@ func calcDifficultyByzantium(time uint64, parent *types.Header) *big.Int {
 	// https://github.com/ethereum/EIPs/pull/669
 	// fake_block_number = max(0, block.number - 3_000_000)
 	fakeBlockNumber := new(big.Int)
+	// TODO: Quadratic vote on difficulty bomb once the network is more decentralized and decide if to move to full PoS
 	if parent.Number.Cmp(big2999999) >= 0 {
 		fakeBlockNumber = fakeBlockNumber.Sub(parent.Number, big2999999) // Note, parent is 1 less than the actual block number
 	}
@@ -595,7 +596,8 @@ func (ethash *Ethash) Prepare(chain consensus.ChainReader, header *types.Header)
 // setting the final state and assembling the block.
 func (ethash *Ethash) Finalize(chain consensus.ChainReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
 	// Accumulate any block and uncle rewards and commit the final state root
-	accumulateRewards(chain.Config(), state, header, uncles)
+	//TODO: Quadratic vote on block rewards contract via Quadradic public goods provision
+	//accumulateRewards(chain.Config(), state, header, uncles)
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
 
 	// Header seems complete, assemble into a block and return

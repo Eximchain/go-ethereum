@@ -26,7 +26,6 @@ import (
 	"github.com/eximchain/go-ethereum/common"
 	"github.com/eximchain/go-ethereum/core/rawdb"
 	"github.com/eximchain/go-ethereum/ethdb"
-	"github.com/eximchain/go-ethereum/params"
 )
 
 // Genesis block for nodes which don't care about the DAO fork (i.e. not configured)
@@ -90,7 +89,7 @@ func TestDAOForkBlockNewChain(t *testing.T) {
 	}{
 		// Test DAO Default Mainnet
 		// DONE: Remove mainnet test will fail since our mainnethash is different from ethereum mainnet hash
-		{"", params.MainnetChainConfig.DAOForkBlock, true},
+		//{"", params.MainnetChainConfig.DAOForkBlock, true},
 		// test DAO Init Old Privnet
 		{daoOldGenesis, nil, false},
 		// test DAO Default No Fork Privnet
@@ -121,7 +120,7 @@ func testDAOForkBlockNewChain(t *testing.T, test int, genesis string, expectBloc
 		geth.WaitExit()
 	}
 	// Retrieve the DAO config flag from the database
-	path := filepath.Join(datadir, "geth", "chaindata")
+	path := filepath.Join(datadir, "exim", "chaindata")
 	db, err := ethdb.NewLDBDatabase(path, 0, 0)
 	if err != nil {
 		t.Fatalf("test %d: failed to open test database: %v", test, err)
