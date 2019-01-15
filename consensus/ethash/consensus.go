@@ -510,6 +510,14 @@ func (ethash *Ethash) verifySeal(chain consensus.ChainReader, header *types.Head
 		}
 		return nil
 	}
+	// DONE: Resolve the blockmaker key and governance smart contract
+	signer, err := ecrecover(header)
+	if err != nil {
+		return errUnauthorized
+	}
+	if ok, err := ethash.isBlockMaker(signer); !ok {
+		return err
+	}
 	// If we're running a shared PoW, delegate verification to it
 	if ethash.shared != nil {
 		return ethash.shared.verifySeal(chain, header, fulldag)
@@ -558,14 +566,6 @@ func (ethash *Ethash) verifySeal(chain consensus.ChainReader, header *types.Head
 	target := new(big.Int).Div(two256, header.Difficulty)
 	if new(big.Int).SetBytes(result).Cmp(target) > 0 {
 		return errInvalidPoW
-	}
-	// DONE: Resolve the blockmaker key and governance smart contract
-	signer, err := ecrecover(header)
-	if err != nil {
-		return errUnauthorized
-	}
-	if ok, err := ethash.isBlockMaker(signer); !ok {
-		return err
 	}
 
 	return nil
