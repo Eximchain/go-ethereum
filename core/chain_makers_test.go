@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/eximchain/go-ethereum/consensus/ethash"
+	"github.com/eximchain/go-ethereum/core/types"
+	"github.com/eximchain/go-ethereum/core/vm"
+	"github.com/eximchain/go-ethereum/crypto"
+	"github.com/eximchain/go-ethereum/ethdb"
+	"github.com/eximchain/go-ethereum/params"
 )
 
 func ExampleGenerateChain() {
@@ -93,8 +93,8 @@ func ExampleGenerateChain() {
 	fmt.Println("balance of addr2:", state.GetBalance(addr2))
 	fmt.Println("balance of addr3:", state.GetBalance(addr3))
 	// Output:
-	// last block: #5
+	//last block: #5
 	// balance of addr1: 989000
 	// balance of addr2: 10000
-	// balance of addr3: 19687500000000001000
+	// balance of addr3: 1000
 }

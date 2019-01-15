@@ -27,13 +27,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/simulations"
-	"github.com/ethereum/go-ethereum/p2p/simulations/adapters"
-	"github.com/ethereum/go-ethereum/swarm/network"
-	"github.com/ethereum/go-ethereum/swarm/state"
+	"github.com/eximchain/go-ethereum/log"
+	"github.com/eximchain/go-ethereum/node"
+	"github.com/eximchain/go-ethereum/p2p/discover"
+	"github.com/eximchain/go-ethereum/p2p/simulations"
+	"github.com/eximchain/go-ethereum/p2p/simulations/adapters"
+	"github.com/eximchain/go-ethereum/swarm/network"
+	"github.com/eximchain/go-ethereum/swarm/state"
 	colorable "github.com/mattn/go-colorable"
 )
 

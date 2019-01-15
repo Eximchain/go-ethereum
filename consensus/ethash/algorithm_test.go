@@ -26,9 +26,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/eximchain/go-ethereum/common"
+	"github.com/eximchain/go-ethereum/common/hexutil"
+	"github.com/eximchain/go-ethereum/core/types"
 )
 
 // prepare converts an ethash cache or dataset from a byte stream into the internal
@@ -696,6 +696,8 @@ func TestHashimoto(t *testing.T) {
 }
 
 // Tests that caches generated on disk may be done concurrently.
+// this test is currently failing because of the changes to how headers work where we pad the extra data with a 65 byte array.
+// In the ethash.VerifySeal section we need to pass to authorize like we did in ethash_test.go. Or have
 func TestConcurrentDiskCacheGeneration(t *testing.T) {
 	// Create a temp folder to generate the caches into
 	cachedir, err := ioutil.TempDir("", "")
@@ -703,7 +705,7 @@ func TestConcurrentDiskCacheGeneration(t *testing.T) {
 		t.Fatalf("Failed to create temporary cache dir: %v", err)
 	}
 	defer os.RemoveAll(cachedir)
-
+	//TODO: need block with signature in extra data and valid mix digest
 	// Define a heavy enough block, one from mainnet should do
 	block := types.NewBlockWithHeader(&types.Header{
 		Number:      big.NewInt(3311058),

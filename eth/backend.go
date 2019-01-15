@@ -25,30 +25,30 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/clique"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/bloombits"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/filters"
-	"github.com/ethereum/go-ethereum/eth/gasprice"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/miner"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/eximchain/go-ethereum/accounts"
+	"github.com/eximchain/go-ethereum/common"
+	"github.com/eximchain/go-ethereum/common/hexutil"
+	"github.com/eximchain/go-ethereum/consensus"
+	"github.com/eximchain/go-ethereum/consensus/clique"
+	"github.com/eximchain/go-ethereum/consensus/ethash"
+	"github.com/eximchain/go-ethereum/core"
+	"github.com/eximchain/go-ethereum/core/bloombits"
+	"github.com/eximchain/go-ethereum/core/rawdb"
+	"github.com/eximchain/go-ethereum/core/types"
+	"github.com/eximchain/go-ethereum/core/vm"
+	"github.com/eximchain/go-ethereum/eth/downloader"
+	"github.com/eximchain/go-ethereum/eth/filters"
+	"github.com/eximchain/go-ethereum/eth/gasprice"
+	"github.com/eximchain/go-ethereum/ethdb"
+	"github.com/eximchain/go-ethereum/event"
+	"github.com/eximchain/go-ethereum/internal/ethapi"
+	"github.com/eximchain/go-ethereum/log"
+	"github.com/eximchain/go-ethereum/miner"
+	"github.com/eximchain/go-ethereum/node"
+	"github.com/eximchain/go-ethereum/p2p"
+	"github.com/eximchain/go-ethereum/params"
+	"github.com/eximchain/go-ethereum/rlp"
+	"github.com/eximchain/go-ethereum/rpc"
 )
 
 type LesServer interface {
@@ -174,6 +174,7 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 	}
 
 	eth.miner = miner.New(eth, eth.chainConfig, eth.EventMux(), eth.engine, config.MinerRecommit, config.MinerGasFloor, config.MinerGasCeil)
+	//Test: extra data vanity still works
 	eth.miner.SetExtra(makeExtraData(config.MinerExtraData))
 
 	eth.APIBackend = &EthAPIBackend{eth, nil}
@@ -376,6 +377,18 @@ func (s *Ethereum) StartMining(threads int) error {
 			}
 			clique.Authorize(eb, wallet.SignHash)
 		}
+		//DONE: Add key to ethash consensus engine to allow miners to sign extra data
+		//TODO: refactor into inject services with ethereum.InjectClient(..)
+		if ethash, ok := s.engine.(*ethash.Ethash); ok {
+			wallet, err := s.accountManager.Find(accounts.Account{Address: eb})
+			if wallet == nil || err != nil {
+				log.Error("Etherbase account unavailable locally", "err", err)
+				return fmt.Errorf("signer missing: %v", err)
+			}
+			ethash.Authorize(eb, wallet.SignHash)
+
+		}
+		log.Info("WEYL CONSENSUS: Add key to ethash consensus engine to allow miners to sign extra data", "key", eb)
 		// If mining is started, we can disable the transaction rejection mechanism
 		// introduced to speed sync times.
 		atomic.StoreUint32(&s.protocolManager.acceptTxs, 1)
