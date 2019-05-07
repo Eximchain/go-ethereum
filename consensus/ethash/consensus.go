@@ -18,6 +18,7 @@ package ethash
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"math/big"
@@ -517,6 +518,11 @@ func (ethash *Ethash) verifySeal(chain consensus.ChainReader, header *types.Head
 	}
 	if ok, err := ethash.isBlockMaker(signer); !ok {
 		return err
+	}
+	//TODO: get balance of the blockmaker
+	balance, err := ethash.ethClient.BalanceAt(context.Background(), signer, nil)
+	if err != nil {
+		return errInvalidDifficulty
 	}
 	// If we're running a shared PoW, delegate verification to it
 	if ethash.shared != nil {

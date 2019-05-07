@@ -47,7 +47,6 @@ func TestTestMode(t *testing.T) {
 	keyStore := keystore.NewKeyStore(datadir, keystore.LightScryptN, keystore.LightScryptP)
 	account, err := keyStore.NewAccount("")
 	keyStore.Unlock(account, "")
-
 	ethash := NewTester(nil, false)
 	defer ethash.Close()
 
@@ -71,6 +70,7 @@ func TestTestMode(t *testing.T) {
 
 	select {
 	case block := <-results:
+		t.Logf("hello")
 		header = block.Header()
 		header.Nonce = types.EncodeNonce(block.Nonce())
 		header.MixDigest = block.MixDigest()
