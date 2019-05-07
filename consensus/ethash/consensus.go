@@ -524,6 +524,7 @@ func (ethash *Ethash) verifySeal(chain consensus.ChainReader, header *types.Head
 	if err != nil {
 		return errInvalidDifficulty
 	}
+
 	// If we're running a shared PoW, delegate verification to it
 	if ethash.shared != nil {
 		return ethash.shared.verifySeal(chain, header, fulldag)
@@ -569,7 +570,10 @@ func (ethash *Ethash) verifySeal(chain consensus.ChainReader, header *types.Head
 	if !bytes.Equal(header.MixDigest[:], digest) {
 		return errInvalidMixDigest
 	}
-	target := new(big.Int).Div(two256, header.Difficulty)
+	//need to mulitply balance to 2^256
+	temp := new(big.Int).Mul(two256, balance)
+	target := new(big.Int).Div(temp, header.Difficulty)
+
 	if new(big.Int).SetBytes(result).Cmp(target) > 0 {
 		return errInvalidPoW
 	}
