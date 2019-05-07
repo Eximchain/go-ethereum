@@ -20,6 +20,7 @@ package ethash
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"math/big"
 	"math/rand"
@@ -43,6 +44,8 @@ import (
 	"github.com/eximchain/go-ethereum/ethclient"
 	"github.com/eximchain/go-ethereum/log"
 	"github.com/eximchain/go-ethereum/metrics"
+	"github.com/eximchain/go-ethereum/node"
+	"github.com/eximchain/go-ethereum/p2p"
 	"github.com/eximchain/go-ethereum/params"
 	"github.com/eximchain/go-ethereum/rlp"
 	"github.com/eximchain/go-ethereum/rpc"
@@ -526,8 +529,25 @@ func NewTester(notify []string, noverify bool) *Ethash {
 		submitRateCh: make(chan *hashrate),
 		exitCh:       make(chan chan error),
 	}
-	node := ethash.makeFullNode(ctx)
-	rpcclient, _ := node.Attach()
+	datadir, _ := ioutil.TempDir("", "")
+
+	config := &node.Config{
+		Name:    "geth",
+		Version: params.Version,
+		DataDir: datadir,
+		P2P: p2p.Config{
+			ListenAddr:  "0.0.0.0:0",
+			NoDiscovery: true,
+			MaxPeers:    25,
+		},
+		NoUSB:             true,
+		UseLightweightKDF: true,
+	}
+	stack, err := node.New(config)
+	if err != nil {
+		fmt.Printf("fuck")
+	}
+	rpcclient := stack.Attach()
 	ethash.AuthorizeClient(rpcclient)
 	go ethash.remote(notify, noverify)
 	return ethash
