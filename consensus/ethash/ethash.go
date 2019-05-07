@@ -475,6 +475,7 @@ type Ethash struct {
 	signFn       SignerFn       // Signer function to authorize hashes with
 	slock        sync.RWMutex   // Protects the signer fields
 	callContract *VotingContract
+	ethClient    *ethclient.Client
 	//signatures   *lru.ARCCache  // Signatures of recent blocks to speed up mining
 }
 
