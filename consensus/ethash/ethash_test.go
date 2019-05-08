@@ -70,7 +70,6 @@ func TestTestMode(t *testing.T) {
 
 	select {
 	case block := <-results:
-		t.Logf("hello")
 		header = block.Header()
 		header.Nonce = types.EncodeNonce(block.Nonce())
 		header.MixDigest = block.MixDigest()

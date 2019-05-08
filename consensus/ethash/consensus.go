@@ -488,6 +488,12 @@ func calcDifficultyFrontier(time uint64, parent *types.Header) *big.Int {
 	return diff
 }
 
+//return boolean regarding whether a block is proof of stake activated
+func (ethash *Ethash) blockIsPOS(config *params.ChainConfig, blockNum *big.Int) bool {
+	fmt.Println(blockNum.String())
+	return config.IsProofOfStake(blockNum)
+}
+
 // VerifySeal implements consensus.Engine, checking whether the given block satisfies
 // the PoW difficulty requirements.
 func (ethash *Ethash) VerifySeal(chain consensus.ChainReader, header *types.Header) error {
@@ -523,6 +529,11 @@ func (ethash *Ethash) verifySeal(chain consensus.ChainReader, header *types.Head
 	balance, err := ethash.ethClient.BalanceAt(context.Background(), signer, nil)
 	if err != nil {
 		return errInvalidDifficulty
+	}
+
+	//check blocknumber
+	if ethash.blockIsPOS(chain.Config(), header.Number) {
+		balance = big1
 	}
 
 	// If we're running a shared PoW, delegate verification to it
